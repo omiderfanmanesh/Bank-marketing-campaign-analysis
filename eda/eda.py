@@ -11,10 +11,8 @@ def main():
     analyzer.description()
 
     plots = BasedPlot(dataset=bank, cfg=cfg)
-    plots.dist_plot_by_col('age')
-    plots.dist_plot('age',trans=TransformersEnum.BOX_PLOT)
-    plots.box_plot_by_col('age',trans=TransformersEnum.SQRT)
-    plots.box_plot('age')
-    plots.violin_plot('age')
+    plots.numerical_features_violin_plot()
+
+
 if __name__ == '__main__':
     main()

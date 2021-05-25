@@ -22,10 +22,13 @@ _C.DATASET.DATASET_ADDRESS = '../data/bank/bank.csv'
 _C.DATASET.DATASET_BRIEF_DESCRIPTION = '../data/bank/description.txt'
 _C.DATASET.TARGET = 'y'
 # ---------------------------------------------------------------------------- #
-# Optimizers
+# Models
 # ---------------------------------------------------------------------------- #
-_C.OPT = CN()
-
+_C.SVM = CN()
+_C.SVM.NAME = 'SVM'
+_C.SVM.KERNEL = 'rbf'
+_C.SVM.GAMMA = 'scale'
+_C.SVM.VERBOSE = True
 # ------------------------------------------------------------------------------ #
 
 
