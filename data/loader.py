@@ -1,4 +1,4 @@
-from .Bank import Bank
+from .bank import Bank
 
 
 def load(cfg):
