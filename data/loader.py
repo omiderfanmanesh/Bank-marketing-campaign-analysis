@@ -1,4 +1,4 @@
-from .bank import Bank
+from data.dataset.bank import Bank
 
 
 def load(cfg):

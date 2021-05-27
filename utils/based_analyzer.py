@@ -34,10 +34,10 @@ class BasedAnalyzer:
         print('\n')
 
         print("------ Numerical/Categorical Features ------")
-        print('Numerical Features: {}'.format(self.numerical_features()))
-        print('number of Numerical Features: {}'.format(self.numerical_features().__len__()))
-        print('Categorical Features: {}'.format(self.categorical_features()))
-        print('number of Categorical Features: {}'.format(self.categorical_features().__len__()))
+        print('Numerical Features: {}'.format(self.dataset.numerical_features()))
+        print('number of Numerical Features: {}'.format(self.dataset.numerical_features().__len__()))
+        print('Categorical Features: {}'.format(self.dataset.categorical_features()))
+        print('number of Categorical Features: {}'.format(self.dataset.categorical_features().__len__()))
         print('\n')
 
         print("--------------- skew & kurt -----------------")
@@ -63,12 +63,6 @@ class BasedAnalyzer:
 
     def count_by(self, col):
         return self.df[col].value_counts()
-
-    def categorical_features(self):
-        return self.df.select_dtypes(include=['object']).columns.tolist()
-
-    def numerical_features(self):
-        return self.df.select_dtypes(exclude=['object']).columns.tolist()
 
     def missing_values(self):
         total = self.df.isnull().sum().sort_values(ascending=False)
