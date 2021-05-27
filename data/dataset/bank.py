@@ -1,4 +1,4 @@
-from .based_dataset import BasedDataset
+from data.dataset.based_dataset import BasedDataset
 from utils.FileType import FileType
 
 

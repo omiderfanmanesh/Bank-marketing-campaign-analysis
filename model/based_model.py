@@ -3,23 +3,49 @@ from time import time
 
 import pandas as pd
 # Metrics
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score
 from skopt import BayesSearchCV
 from skopt.callbacks import DeadlineStopper, VerboseCallback
 
+from utils import MetricsType
+
 
 class BasedModel:
-    def train_model(self, X_tr, y_tr, X_te, y_te):
-        print('start training...')
-        self.model.fit(X_tr, y_tr)
-        print('evaluation...')
-        y_p = self.model.predict(X_te)
-        score = self.evaluate(y_te, y_p)
-        print(f'score is {score}')
-        return self.model, score
+    def __init__(self, cfg):
+        self._model = None
+        self._metric_function = cfg.METRIC
 
-    def evaluate(self, y_true, y_pred):
-        return f1_score(y_true, y_pred, average="macro")
+
+    def train(self, X_train, y_train):
+        print('start training...')
+        self.model.fit(X_train, y_train)
+        return self.model
+
+    def evaluate(self, X_test, y_test):
+        print('evaluation...')
+        y_p = self.model.predict(X_test)
+        score = self.metric(y_test, y_p)
+        print(f'score is {score}')
+        return
+
+    def metric(self, y_true, y_pred):
+        metric_type = self._metric_function
+        if metric_type == MetricsType.F1_SCORE_BINARY:
+            return f1_score(y_true, y_pred, average="binary")
+        elif metric_type == MetricsType.F1_SCORE_MACRO:
+            return f1_score(y_true, y_pred, average="micro")
+        elif metric_type == MetricsType.F1_SCORE_MACRO:
+            return f1_score(y_true, y_pred, average="macro")
+        elif metric_type == MetricsType.F1_SCORE_WEIGHTED:
+            return f1_score(y_true, y_pred, average="weighted")
+        elif metric_type == MetricsType.F1_SCORE_SAMPLE:
+            return f1_score(y_true, y_pred, average="sample")
+        elif metric_type == MetricsType.PRECISION:
+            return precision_score(y_true, y_pred)
+        elif metric_type == MetricsType.RECALL:
+            return recall_score(y_true, y_pred)
+        elif metric_type == MetricsType.ACCURACY:
+            return accuracy_score(y_true, y_pred)
 
     def hyper_parameter_tuning(self, params, X, y, title):
         opt = BayesSearchCV(**params)

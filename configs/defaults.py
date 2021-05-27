@@ -1,5 +1,5 @@
+from utils import MetricsType, TrainingMode
 from yacs.config import CfgNode as CN
-
 # -----------------------------------------------------------------------------
 # Config definition
 # -----------------------------------------------------------------------------
@@ -26,20 +26,20 @@ _C.DATASET.TARGET = 'y'
 # ---------------------------------------------------------------------------- #
 _C.SVM = CN()
 _C.SVM.NAME = 'SVM'
+_C.SVM.MODE = TrainingMode.CLASSIFICATION
 _C.SVM.KERNEL = 'rbf'
 _C.SVM.GAMMA = 'scale'
 _C.SVM.VERBOSE = True
-# ------------------------------------------------------------------------------ #
-
-
 # ---------------------------------------------------------------------------- #
-# Solver
+# metric
 # ---------------------------------------------------------------------------- #
-_C.SOLVER = CN()
+_C.METRIC = CN()
 
-_C.SOLVER.MAX_EPOCHS = 50
+_C.METRIC = MetricsType.F1_SCORE_MACRO
+_C.CONFUSION_MATRIX = True
+
 
 # ---------------------------------------------------------------------------- #
 # Misc options
 # ---------------------------------------------------------------------------- #
-_C.OUTPUT_DIR = "../outputs"
+# _C.OUTPUT_DIR = "../outputs"
