@@ -1,8 +1,8 @@
-from data import load
 from configs import cfg
-from bank_analyser import BankAnalyzer
-from bank_plot import BasedPlot
-from utils.transformers_enums import TransformersEnum
+from data import load
+from eda.bank_analyser import BankAnalyzer
+from eda.bank_plot import BasedPlot
+
 
 def main():
     bank = load(cfg)
@@ -11,7 +11,7 @@ def main():
     analyzer.description()
 
     plots = BasedPlot(dataset=bank, cfg=cfg)
-    plots.numerical_features_violin_plot()
+    plots.numerical_features_scatter_plot()
 
 
 if __name__ == '__main__':

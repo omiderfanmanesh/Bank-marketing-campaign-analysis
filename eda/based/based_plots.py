@@ -1,36 +1,16 @@
+#  Copyright (c) 2021.
+#
+
 from math import ceil
 
 import matplotlib.pyplot as plt
-import numpy as np
 import seaborn as sns
-from scipy import stats
-
-from utils.transformers_enums import TransformersEnum
 
 
 class BasedPlot:
     def __init__(self, dataset, cfg):
         self._dataset = dataset
         self._df = dataset.df
-
-    def __categorical_features(self):
-        return self.df.select_dtypes(include=['object']).columns.tolist()
-
-    def __numerical_features(self):
-        return self.df.select_dtypes(exclude=['object']).columns.tolist()
-
-    def __transform(self, data, trans_type):
-        try:
-            if trans_type == TransformersEnum.LOG:
-                data = np.log(data)
-            elif trans_type == TransformersEnum.SQRT:
-                data = np.sqrt(data)
-            elif trans_type == TransformersEnum.BOX_PLOT:
-                data = stats.boxcox(data)[0]
-        except:
-            print('transform can not be applied')
-
-        return data
 
     def __scatter_plot(self, df, features, trans=None):
         g = sns.PairGrid(df, vars=features, hue=self.target)
@@ -39,7 +19,7 @@ class BasedPlot:
         plt.show()
 
     def __plot_feature_distribution(self, df, col, is_numerical=True, trans=None):
-        df[col] = self.__transform(df[col], trans)
+        df[col] = self.dataset.transform(df[col], trans)
         if is_numerical:
             g = sns.FacetGrid(df, col=self.target, hue=self.target)
             g.map(sns.histplot, col)
@@ -48,26 +28,26 @@ class BasedPlot:
         plt.show()
 
     def numerical_features_distribution(self, trans=None):
-        features = self.__numerical_features()
+        features = self.dataset.numerical_features()
         for f in features:
             self.__plot_feature_distribution(self.df.copy(), f, is_numerical=True, trans=trans)
 
     def categorical_features_distribution(self, trans=None):
-        features = self.__categorical_features()
+        features = self.dataset.categorical_features()
         for f in features:
             self.__plot_feature_distribution(self.df.copy(), f, is_numerical=False, trans=trans)
 
     def numerical_features_scatter_plot(self, trans=None):
-        features = self.__numerical_features()
+        features = self.dataset.numerical_features()
         self.__scatter_plot(self.df.copy(), features=features, trans=trans)
 
     def numerical_features_box_plot(self, trans=None):
-        features = self.__numerical_features()
+        features = self.dataset.numerical_features()
         for f in features:
             self.box_plot_by_col(col=f, trans=trans)
 
     def numerical_features_violin_plot(self, trans=None):
-        features = self.__numerical_features()
+        features = self.dataset.numerical_features()
         for f in features:
             self.violin_plot_by_col(col=f, trans=trans)
 
@@ -84,12 +64,12 @@ class BasedPlot:
         plt.show()
 
     def dist_plot_numerical_columns(self):
-        numerical = self.__numerical_features()
+        numerical = self.dataset.numerical_features()
         self.__dist_sub_plot(self.df[numerical])
 
     def dist_plot_by_col(self, col, trans=None):
         df = self.df.copy()
-        df[col] = self.__transform(df[col], trans)
+        df[col] = self.dataset.transform(df[col], trans)
 
         params = {
             'data': df,
@@ -104,7 +84,7 @@ class BasedPlot:
 
     def dist_plot(self, col, trans=None):
         df = self.df.copy()
-        df[col] = self.__transform(df[col], trans)
+        df[col] = self.dataset.transform(df[col], trans)
 
         params = {
             'data': df,
@@ -123,7 +103,7 @@ class BasedPlot:
 
     def box_plot_by_col(self, col, trans=None):
         df = self.df.copy()
-        df[col] = self.__transform(df[col], trans)
+        df[col] = self.dataset.transform(df[col], trans)
 
         params = {
             'data': df,
@@ -136,7 +116,7 @@ class BasedPlot:
 
     def box_plot(self, col, trans=None):
         df = self.df.copy()
-        df[col] = self.__transform(df[col], trans)
+        df[col] = self.dataset.transform(df[col], trans)
 
         params = {
             'data': df,
@@ -152,7 +132,7 @@ class BasedPlot:
 
     def violin_plot_by_col(self, col, trans=None):
         df = self.df.copy()
-        df[col] = self.__transform(df[col], trans)
+        df[col] = self.dataset.transform(df[col], trans)
 
         params = {
             'data': df,
@@ -165,7 +145,7 @@ class BasedPlot:
 
     def violin_plot(self, col, trans=None):
         df = self.df.copy()
-        df[col] = self.__transform(df[col], trans)
+        df[col] = self.dataset.transform(df[col], trans)
 
         params = {
             'data': df,

@@ -1,4 +1,4 @@
-from utils import BasedAnalyzer
+from eda.based import BasedAnalyzer
 
 
 class BankAnalyzer(BasedAnalyzer):

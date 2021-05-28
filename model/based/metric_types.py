@@ -1,4 +1,4 @@
-class MetricsType:
+class MetricTypes:
     F1_SCORE_BINARY = 0
     F1_SCORE_MICRO = 1
     F1_SCORE_MACRO = 2
