@@ -1,3 +1,6 @@
+#  Copyright (c) 2021.
+#
+
 from pprint import pprint
 from time import time
 
@@ -7,7 +10,7 @@ from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_sc
 from skopt import BayesSearchCV
 from skopt.callbacks import DeadlineStopper, VerboseCallback
 
-from utils import MetricsType
+from .metric_types import MetricTypes
 
 
 class BasedModel:
@@ -30,21 +33,21 @@ class BasedModel:
 
     def metric(self, y_true, y_pred):
         metric_type = self._metric_function
-        if metric_type == MetricsType.F1_SCORE_BINARY:
+        if metric_type == MetricTypes.F1_SCORE_BINARY:
             return f1_score(y_true, y_pred, average="binary")
-        elif metric_type == MetricsType.F1_SCORE_MACRO:
+        elif metric_type == MetricTypes.F1_SCORE_MACRO:
             return f1_score(y_true, y_pred, average="micro")
-        elif metric_type == MetricsType.F1_SCORE_MACRO:
+        elif metric_type == MetricTypes.F1_SCORE_MACRO:
             return f1_score(y_true, y_pred, average="macro")
-        elif metric_type == MetricsType.F1_SCORE_WEIGHTED:
+        elif metric_type == MetricTypes.F1_SCORE_WEIGHTED:
             return f1_score(y_true, y_pred, average="weighted")
-        elif metric_type == MetricsType.F1_SCORE_SAMPLE:
+        elif metric_type == MetricTypes.F1_SCORE_SAMPLE:
             return f1_score(y_true, y_pred, average="sample")
-        elif metric_type == MetricsType.PRECISION:
+        elif metric_type == MetricTypes.PRECISION:
             return precision_score(y_true, y_pred)
-        elif metric_type == MetricsType.RECALL:
+        elif metric_type == MetricTypes.RECALL:
             return recall_score(y_true, y_pred)
-        elif metric_type == MetricsType.ACCURACY:
+        elif metric_type == MetricTypes.ACCURACY:
             return accuracy_score(y_true, y_pred)
 
     def hyper_parameter_tuning(self, params, X, y, title):

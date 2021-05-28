@@ -1,6 +1,6 @@
 from enum import Enum
 
 
-class FileType(Enum):
+class FileTypes(Enum):
     CSV = 0
     TXT = 1

@@ -1,4 +1,4 @@
-from utils import BasedPlot
+from eda.based import BasedPlot
 
 
 class BankPlots(BasedPlot):

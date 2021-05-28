@@ -1,7 +1,7 @@
 from sklearn.svm import SVC, SVR
 
-from model.based_model import BasedModel
-from utils.training_model import TrainingMode
+from model.based import BasedModel
+from model.based import TrainingMode
 
 
 class SVM(BasedModel):
