@@ -1,6 +1,6 @@
 from yacs.config import CfgNode as CN
 
-from data.based import EncoderTypes
+from data.based import EncoderTypes, ScaleTypes
 from model.based import MetricTypes, TrainingMode
 
 # -----------------------------------------------------------------------------
@@ -57,6 +57,11 @@ _C.ENCODER.CONTACT = EncoderTypes.LABEL
 _C.ENCODER.MONTH = EncoderTypes.ORDINAL
 _C.ENCODER.POUTCOME = EncoderTypes.LABEL
 
+# -----------------------------------------------------------------------------
+# SCALER /
+# -----------------------------------------------------------------------------
+_C.SCALER = CN()
+_C.SCALER = ScaleTypes.STANDARD
 # ---------------------------------------------------------------------------- #
 # Misc options
 # ---------------------------------------------------------------------------- #

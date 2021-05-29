@@ -28,26 +28,26 @@ class BasedPlot:
         plt.show()
 
     def numerical_features_distribution(self, trans=None):
-        features = self.dataset.numerical_features()
+        features = self.dataset.__numerical_features()
         for f in features:
             self.__plot_feature_distribution(self.df.copy(), f, is_numerical=True, trans=trans)
 
     def categorical_features_distribution(self, trans=None):
-        features = self.dataset.categorical_features()
+        features = self.dataset.__categorical_features()
         for f in features:
             self.__plot_feature_distribution(self.df.copy(), f, is_numerical=False, trans=trans)
 
     def numerical_features_scatter_plot(self, trans=None):
-        features = self.dataset.numerical_features()
+        features = self.dataset.__numerical_features()
         self.__scatter_plot(self.df.copy(), features=features, trans=trans)
 
     def numerical_features_box_plot(self, trans=None):
-        features = self.dataset.numerical_features()
+        features = self.dataset.__numerical_features()
         for f in features:
             self.box_plot_by_col(col=f, trans=trans)
 
     def numerical_features_violin_plot(self, trans=None):
-        features = self.dataset.numerical_features()
+        features = self.dataset.__numerical_features()
         for f in features:
             self.violin_plot_by_col(col=f, trans=trans)
 
@@ -64,7 +64,7 @@ class BasedPlot:
         plt.show()
 
     def dist_plot_numerical_columns(self):
-        numerical = self.dataset.numerical_features()
+        numerical = self.dataset.__numerical_features()
         self.__dist_sub_plot(self.df[numerical])
 
     def dist_plot_by_col(self, col, trans=None):
