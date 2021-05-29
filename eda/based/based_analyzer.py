@@ -97,7 +97,7 @@ class BasedAnalyzer:
 
     @property
     def target(self):
-        return self._dataset.target
+        return self._dataset.target_col
 
 
     @property

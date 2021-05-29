@@ -9,13 +9,17 @@ from model.based import MetricTypes, TrainingMode
 
 _C = CN()
 
+# -----------------------------------------------------------------------------
+# BASIC CONFIG
+# -----------------------------------------------------------------------------
+_C.BASIC = CN()
+_C.BASIC.SEED = 2022
+_C.BASIC.PCA = False
+# -----------------------------------------------------------------------------
+# MODEL CONFIG
+# -----------------------------------------------------------------------------
 _C.MODEL = CN()
 _C.MODEL.NUM_CLASSES = 2
-
-# -----------------------------------------------------------------------------
-# INPUT
-# -----------------------------------------------------------------------------
-_C.INPUT = CN()
 
 # -----------------------------------------------------------------------------
 # Dataset
@@ -46,22 +50,28 @@ _C.CONFUSION_MATRIX = True
 # CATEGORICAL FEATURES ENCODER CONFIG / _C.ENCODER.{COLUMN NAME} = TYPE OF ENCODER
 # -----------------------------------------------------------------------------
 _C.ENCODER = CN()
-_C.ENCODER.JOB = EncoderTypes.LABEL
-_C.ENCODER.MARITAL = EncoderTypes.LABEL
-_C.ENCODER.EDUCATION = EncoderTypes.LABEL
-_C.ENCODER.DEFAULT = EncoderTypes.LABEL
-_C.ENCODER.EDUCATION = EncoderTypes.LABEL
-_C.ENCODER.HOUSING = EncoderTypes.LABEL
-_C.ENCODER.LOAN = EncoderTypes.LABEL
-_C.ENCODER.CONTACT = EncoderTypes.LABEL
+_C.ENCODER.JOB = EncoderTypes.ONE_HOT
+_C.ENCODER.MARITAL = EncoderTypes.ONE_HOT
+_C.ENCODER.EDUCATION = EncoderTypes.ONE_HOT
+_C.ENCODER.DEFAULT = EncoderTypes.ONE_HOT
+_C.ENCODER.HOUSING = EncoderTypes.BINARY
+_C.ENCODER.LOAN = EncoderTypes.BINARY
+_C.ENCODER.CONTACT = EncoderTypes.ONE_HOT
 _C.ENCODER.MONTH = EncoderTypes.ORDINAL
-_C.ENCODER.POUTCOME = EncoderTypes.LABEL
+_C.ENCODER.POUTCOME = EncoderTypes.ONE_HOT
 
 # -----------------------------------------------------------------------------
 # SCALER /
 # -----------------------------------------------------------------------------
 _C.SCALER = CN()
 _C.SCALER = ScaleTypes.STANDARD
+
+# -----------------------------------------------------------------------------
+# DECOMPOSITION
+# -----------------------------------------------------------------------------
+_C.PCA = CN()
+_C.PCA.N_COMPONENTS = 0.8
+
 # ---------------------------------------------------------------------------- #
 # Misc options
 # ---------------------------------------------------------------------------- #

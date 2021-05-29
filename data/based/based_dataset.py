@@ -5,6 +5,7 @@ import random
 
 import numpy as np
 import pandas as pd
+from pandas import DataFrame
 from scipy import stats
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
@@ -22,23 +23,24 @@ pd.set_option('display.max_colwidth', None)
 
 class BasedDataset:
 
-    def __init__(self, cfg, dataset_type):
+    def __init__(self, cfg, dataset_type, target_encoding=True):
 
         self._cfg = cfg
         self.dataset_type = dataset_type
         self.dataset_address = cfg.DATASET.DATASET_ADDRESS
-        self.target = cfg.DATASET.TARGET
+        self.target_col = cfg.DATASET.TARGET
         self.dataset_description_file = cfg.DATASET.DATASET_BRIEF_DESCRIPTION
 
         if self.dataset_description_file is not None:
             self.about = self.__open_txt_file(self.dataset_description_file)
 
         self.load_dataset()
-        self.origin_df = self.df.copy()
+        self.df = self.origin_df.copy()
+        self.pca = None
 
     def load_dataset(self):
         if self.dataset_type == FileTypes.CSV:
-            self.df = self.__create_csv_dataframe()
+            self.origin_df = self.__create_csv_dataframe()
         else:
             raise ValueError('dataset should be CSV file')
 
@@ -72,26 +74,32 @@ class BasedDataset:
             cols = self.numerical_features(data=data)
         return data[cols]
 
-    def split_to(self, test_size=0.10, val_size=0.10, has_validation=False, random_state=seed):
-        X, y = self.__samples_and_labels()
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+    def split_to(self, test_size=0.10, val_size=0.10, has_validation=False, use_pca=False, random_state=seed):
+        _X, _y = self.__samples_and_labels(use_pca=use_pca)
+        _X_train, _X_test, _y_train, _y_test = train_test_split(_X, _y, test_size=test_size, random_state=random_state)
         if has_validation:
-            X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_size,
-                                                              random_state=random_state)
-            return X_train, X_val, X_test, y_train, y_val, y_test
+            _X_train, X_val, _y_train, y_val = train_test_split(_X_train, _y_train, test_size=val_size,
+                                                                random_state=random_state)
+            return _X_train, X_val, _X_test, _y_train, y_val, _y_test
         else:
-            return X_train, X_test, y_train, y_test
+            return _X_train, _X_test, _y_train, _y_test
 
     def generate_new_column_name(self, col, prefix):
         return '{}_{}'.format(col, prefix)
 
-    def __samples_and_labels(self):
-        data = self.df.copy()
+    def __samples_and_labels(self, use_pca=False):
+        _X = None
+        if use_pca:
+            if self.pca is not None:
+                _X = self.pca.copy()
+            else:
+                print('pca data frame is not provided')
+        else:
+            _X = self.df.copy()
 
-        y = self.__target_encoding()
-        X = data.drop(self.target, axis=1)
+        _y = self.origin_df[self.target_col].copy()
 
-        return X, y
+        return _X, _y
 
     def __create_csv_dataframe(self):
         return pd.read_csv(self.dataset_address, delimiter=';')
@@ -100,17 +108,24 @@ class BasedDataset:
         return open(desc, 'r').read()
 
     def __target_encoding(self):
-        le = LabelEncoder()
-        targets = le.fit_transform(self.df[self.target])
-        return targets
+        _le = LabelEncoder()
+        return _le.fit_transform(self.targets)
 
     @property
     def df(self):
-        return self._df
+        return self._df.drop(self.target_col, axis=1)
 
     @df.setter
-    def df(self, df):
+    def df(self, df: DataFrame):
         self._df = df
+
+    @property
+    def pca(self):
+        return self._pca
+
+    @pca.setter
+    def pca(self, value):
+        self._pca = value
 
     @property
     def origin_df(self):
@@ -137,12 +152,16 @@ class BasedDataset:
         self._dataset_type = value
 
     @property
-    def target(self):
-        return self._target
+    def target_col(self):
+        return self._target_col
 
-    @target.setter
-    def target(self, target):
-        self._target = target
+    @target_col.setter
+    def target_col(self, target):
+        self._target_col = target
+
+    @property
+    def targets(self):
+        return self.origin_df[self.target_col]
 
     @property
     def about(self):

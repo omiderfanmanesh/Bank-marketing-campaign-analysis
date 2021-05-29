@@ -157,7 +157,7 @@ class BasedPlot:
 
     @property
     def target(self):
-        return self.dataset.target
+        return self.dataset.target_col
 
     @property
     def df(self):
