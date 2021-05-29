@@ -37,10 +37,10 @@ class BasedAnalyzer:
         print('\n')
 
         print("------ Numerical/Categorical Features ------")
-        print('Numerical Features: {}'.format(self.dataset.__numerical_features()))
-        print('number of Numerical Features: {}'.format(self.dataset.__numerical_features().__len__()))
-        print('Categorical Features: {}'.format(self.dataset.__categorical_features()))
-        print('number of Categorical Features: {}'.format(self.dataset.__categorical_features().__len__()))
+        print('Numerical Features: {}'.format(self.dataset.numerical_features()))
+        print('number of Numerical Features: {}'.format(self.dataset.numerical_features().__len__()))
+        print('Categorical Features: {}'.format(self.dataset.categorical_features()))
+        print('number of Categorical Features: {}'.format(self.dataset.categorical_features().__len__()))
         print('\n')
 
         print("--------------- skew & kurt -----------------")
