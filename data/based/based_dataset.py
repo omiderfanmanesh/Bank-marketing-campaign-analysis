@@ -37,6 +37,8 @@ class BasedDataset:
         self.load_dataset()
         self.df = self.origin_df.copy()
         self.pca = None
+        self.encoded_data = None
+        self.scaled_data = None
 
     def load_dataset(self):
         if self.dataset_type == FileTypes.CSV:
@@ -178,3 +180,19 @@ class BasedDataset:
     @dataset_description_file.setter
     def dataset_description_file(self, value):
         self._dataset_description_file = value
+
+    @property
+    def encoded_data(self):
+        return self._encoded_data
+
+    @encoded_data.setter
+    def encoded_data(self, value):
+        self._encoded_data = value
+
+    @property
+    def scaled_data(self):
+        return self._scaled_data
+
+    @scaled_data.setter
+    def scaled_data(self, value):
+        self._scaled_data = value

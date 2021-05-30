@@ -1,2 +1,2 @@
-from .bank_analyser import BankAnalyzer
-from .bank_plot import BankPlots
+from eda.bank_analyser import BankAnalyzer
+from eda.bank_plot import BankPlots

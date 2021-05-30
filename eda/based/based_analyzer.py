@@ -61,7 +61,7 @@ class BasedAnalyzer:
         print('\n')
 
         print("----------------- is target balanced? -----------------")
-        print(self.count_by(self.target))
+        print(self.count_by(self.target_col))
         print('\n')
 
     def count_by(self, col):
@@ -96,13 +96,16 @@ class BasedAnalyzer:
         return self.df.quantile([.1, .25, .5, .75], axis=0).T
 
     @property
-    def target(self):
+    def target_col(self):
         return self._dataset.target_col
 
+    @property
+    def target(self):
+        return self._dataset.target
 
     @property
     def df(self):
-        return self._dataset.df
+        return self._dataset.origin_df
 
     @property
     def dataset(self):

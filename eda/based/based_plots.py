@@ -4,7 +4,10 @@
 from math import ceil
 
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
+
+sns.set_theme(style="white")
 
 
 class BasedPlot:
@@ -154,6 +157,27 @@ class BasedPlot:
         }
 
         self.__violin_plot(params)
+
+    def corr(self, data, all_methods=True):
+        if all_methods:
+            for method in ["pearson", "spearman", "kendall"]:
+                self.__corr_plot(data=data, method=method)
+        else:
+            self.__corr_plot(data=data)
+
+    def __corr_plot(self, data, method='pearson'):
+        _corr = data.corr(method=method)
+        _mask = np.triu(np.ones_like(_corr, dtype=bool))
+        # Set up the matplotlib figure
+        f, ax = plt.subplots(figsize=(11, 9))
+        # Generate a custom diverging colormap
+        _cmap = sns.diverging_palette(230, 20, as_cmap=True)
+
+        # Draw the heatmap with the mask and correct aspect ratio
+        _heat_map = sns.heatmap(_corr, mask=_mask, cmap=_cmap, vmax=.3, center=0,
+                                square=True, linewidths=.5, cbar_kws={"shrink": .5})
+        _heat_map.set_title('Feature Correlation by {}'.format(method))
+        plt.show()
 
     @property
     def target(self):
