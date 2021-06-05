@@ -39,6 +39,31 @@ _C.SVM.MODE = TrainingMode.CLASSIFICATION
 _C.SVM.KERNEL = 'rbf'
 _C.SVM.GAMMA = 'scale'
 _C.SVM.VERBOSE = True
+
+_C.RANDOM_FOREST = CN()
+_C.RANDOM_FOREST.NAME = 'RANDOM_FOREST'
+_C.RANDOM_FOREST.MODE = TrainingMode.CLASSIFICATION
+
+_C.RANDOM_FOREST.n_estimators = 100
+_C.RANDOM_FOREST.criterion = "gini"
+_C.RANDOM_FOREST.max_depth = None
+_C.RANDOM_FOREST.min_samples_split = 2
+_C.RANDOM_FOREST.min_samples_leaf = 1
+_C.RANDOM_FOREST.min_weight_fraction_leaf = 0.0
+_C.RANDOM_FOREST.max_features = "auto"
+_C.RANDOM_FOREST.max_leaf_nodes = None
+_C.RANDOM_FOREST.min_impurity_decrease = 0.0
+_C.RANDOM_FOREST.min_impurity_split = None
+_C.RANDOM_FOREST.bootstrap = True
+_C.RANDOM_FOREST.oob_score = False
+_C.RANDOM_FOREST.n_jobs = None
+_C.RANDOM_FOREST.random_state = None
+_C.RANDOM_FOREST.verbose = 0
+_C.RANDOM_FOREST.warm_start = False
+_C.RANDOM_FOREST.class_weight = None
+_C.RANDOM_FOREST.ccp_alpha = 0.0
+_C.RANDOM_FOREST.max_samples = None
+
 # ---------------------------------------------------------------------------- #
 # metric
 # ---------------------------------------------------------------------------- #

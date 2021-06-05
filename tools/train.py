@@ -2,7 +2,7 @@ from configs import cfg
 from data.loader import load
 from data.preprocessing import Encoders, Scalers, PCA
 from engine.trainer import do_train
-from model import SVM
+from model import RandomForest
 
 
 def main():
@@ -10,7 +10,7 @@ def main():
     bank.load_dataset()
     bank.age()
     bank.duration()
-    model = SVM(cfg=cfg)
+    model = RandomForest(cfg=cfg)
 
     encoder = Encoders(cdg=cfg)
     scaler = Scalers(cfg=cfg)
