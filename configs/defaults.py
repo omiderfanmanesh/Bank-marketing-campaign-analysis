@@ -36,9 +36,13 @@ _C.DATASET.HAS_CATEGORICAL_TARGETS = True
 _C.SVM = CN()
 _C.SVM.NAME = 'SVM'
 _C.SVM.MODE = TrainingMode.CLASSIFICATION
+
 _C.SVM.KERNEL = 'rbf'
 _C.SVM.GAMMA = 'scale'
 _C.SVM.VERBOSE = True
+
+_C.SVM.FINE_TUNE = CN()
+
 # ---------------------------------------------------------------------------- #
 _C.RANDOM_FOREST = CN()
 _C.RANDOM_FOREST.NAME = 'RANDOM_FOREST'
@@ -63,6 +67,11 @@ _C.RANDOM_FOREST.WARM_START = False  # default = False
 _C.RANDOM_FOREST.CLASS_WEIGHT = None  # default = None
 _C.RANDOM_FOREST.CCP_ALPHA = 0.0  # default = 0.0
 _C.RANDOM_FOREST.MAX_SAMPLES = None  # default = None
+
+_C.RANDOM_FOREST.FINE_TUNE = CN()
+_C.RANDOM_FOREST.FINE_TUNE.N_ESTIMATORS = (5, 10, 15, 20)
+_C.RANDOM_FOREST.FINE_TUNE.CRITERION = None
+
 # ---------------------------------------------------------------------------- #
 _C.LOGISTIC_REGRESSION = CN()
 _C.LOGISTIC_REGRESSION.NAME = 'LOGISTIC REGRESSION'
@@ -82,6 +91,9 @@ _C.LOGISTIC_REGRESSION.VERBOSE = 0  # default = 0
 _C.LOGISTIC_REGRESSION.WARM_START = False  # default = False
 _C.LOGISTIC_REGRESSION.N_JOBS = None  # default = None
 _C.LOGISTIC_REGRESSION.L1_RATIO = None  # default = None
+
+_C.LOGISTIC_REGRESSION.FINE_TUNE = CN()
+
 # ---------------------------------------------------------------------------- #
 _C.DECISION_TREE = CN()
 _C.DECISION_TREE.NAME = 'RANDOM_FOREST'
@@ -101,6 +113,11 @@ _C.DECISION_TREE.MIN_IMPURITY_SPLIT = None  # min_impurity_split : float, defaul
 _C.DECISION_TREE.CLASS_WEIGHT = None  # class_weight : dict, list of dict or "balanced", default=None
 _C.DECISION_TREE.PRESORT = 'deprecated'  # presort : deprecated, default='deprecated'
 _C.DECISION_TREE.CCP_ALPHA = 0.0  # ccp_alpha : non-negative float, default=0.0
+
+_C.DECISION_TREE.FINE_TUNE = CN()
+_C.DECISION_TREE.FINE_TUNE.CRITERION = ("gini", "entropy")
+_C.DECISION_TREE.FINE_TUNE.SPLITTER = None
+
 # ---------------------------------------------------------------------------- #
 # ---------------------------------------------------------------------------- #
 # metric
