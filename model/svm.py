@@ -20,6 +20,9 @@ class SVM(BasedModel):
         elif self._training_mode == TrainingMode.REGRESSION:
             self.model = SVR(**self._params)
 
-    def get_model(self):
-        return self.model
+        for _k in cfg.SVM.FINE_TUNE:
+            _param = cfg.SVM.FINE_TUNE[_k]
 
+            if _param is not None:
+                _param = [*_param]
+                self.fine_tune_params[_k.lower()] = [*_param]

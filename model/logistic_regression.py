@@ -31,5 +31,9 @@ class LogisticRegression(BasedModel):
         if self._training_mode == TrainingMode.CLASSIFICATION:
             self.model = lg(**self._params)
 
-    def get_model(self):
-        return self.model
+        for _k in cfg.LOGISTIC_REGRESSION.FINE_TUNE:
+            _param = cfg.LOGISTIC_REGRESSION.FINE_TUNE[_k]
+
+            if _param is not None:
+                _param = [*_param]
+                self.fine_tune_params[_k.lower()] = [*_param]
