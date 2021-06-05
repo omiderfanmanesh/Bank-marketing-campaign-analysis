@@ -83,7 +83,25 @@ _C.LOGISTIC_REGRESSION.WARM_START = False  # default = False
 _C.LOGISTIC_REGRESSION.N_JOBS = None  # default = None
 _C.LOGISTIC_REGRESSION.L1_RATIO = None  # default = None
 # ---------------------------------------------------------------------------- #
+_C.DECISION_TREE = CN()
+_C.DECISION_TREE.NAME = 'RANDOM_FOREST'
+_C.DECISION_TREE.MODE = TrainingMode.CLASSIFICATION
 
+_C.DECISION_TREE.CRITERION = "gini"  # criterion : {"gini", "entropy"}, default="gini"
+_C.DECISION_TREE.SPLITTER = "best"  # splitter : {"best", "random"}, default="best"
+_C.DECISION_TREE.MAX_DEPTH = None  # max_depth : int, default=None
+_C.DECISION_TREE.MIN_SAMPLES_SPLIT = 2  # min_samples_split : int or float, default=2
+_C.DECISION_TREE.MIN_SAMPLES_LEAF = 1  # min_samples_leaf : int or float, default=1
+_C.DECISION_TREE.MIN_WEIGHT_FRACTION_LEAF = 0.0  # min_weight_fraction_leaf : float, default=0.0
+_C.DECISION_TREE.MAX_FEATURES = None  # max_features : int, float or {"auto", "sqrt", "log2"}, default=None
+_C.DECISION_TREE.RANDOM_STATE = None  # random_state : int, RandomState instance, default=None
+_C.DECISION_TREE.MAX_LEAF_NODES = None  # max_leaf_nodes : int, default=None
+_C.DECISION_TREE.MIN_IMPURITY_DECREASE = 0.0  # min_impurity_decrease : float, default=0.0
+_C.DECISION_TREE.MIN_IMPURITY_SPLIT = None  # min_impurity_split : float, default=0
+_C.DECISION_TREE.CLASS_WEIGHT = None  # class_weight : dict, list of dict or "balanced", default=None
+_C.DECISION_TREE.PRESORT = 'deprecated'  # presort : deprecated, default='deprecated'
+_C.DECISION_TREE.CCP_ALPHA = 0.0  # ccp_alpha : non-negative float, default=0.0
+# ---------------------------------------------------------------------------- #
 # ---------------------------------------------------------------------------- #
 # metric
 # ---------------------------------------------------------------------------- #
