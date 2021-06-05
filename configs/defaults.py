@@ -28,6 +28,7 @@ _C.DATASET = CN()
 _C.DATASET.DATASET_ADDRESS = '../data/dataset/bank.csv'
 _C.DATASET.DATASET_BRIEF_DESCRIPTION = '../data/dataset/description.txt'
 _C.DATASET.TARGET = 'y'
+_C.DATASET.HAS_CATEGORICAL_TARGETS = True
 # _C.DATASET.DROP_COLS = ('y')
 # ---------------------------------------------------------------------------- #
 # Models
@@ -59,7 +60,7 @@ _C.ENCODER.LOAN = EncoderTypes.LABEL
 _C.ENCODER.CONTACT = EncoderTypes.LABEL
 _C.ENCODER.MONTH = EncoderTypes.LABEL
 _C.ENCODER.POUTCOME = EncoderTypes.LABEL
-
+# _C.ENCODER.Y = EncoderTypes.LABEL # if your target is categorical
 # -----------------------------------------------------------------------------
 # SCALER /
 # -----------------------------------------------------------------------------

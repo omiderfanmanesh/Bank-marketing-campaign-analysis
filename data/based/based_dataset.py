@@ -35,24 +35,27 @@ class BasedDataset:
             self.about = self.__open_txt_file(self.dataset_description_file)
 
         self.load_dataset()
-        self.df = self.origin_df.copy()
+        self.df = self.df_main.copy()
         self.pca = None
         self.encoded_data = None
         self.scaled_data = None
 
     def load_dataset(self):
         if self.dataset_type == FileTypes.CSV:
-            self.origin_df = self.__create_csv_dataframe()
+            self.df_main = self.__create_csv_dataframe()
         else:
             raise ValueError('dataset should be CSV file')
 
-    def __transform(self, data, trans_type):
+    def transform(self, data, trans_type):
+        _min = min(data)
+        if _min <= 0:
+            data = data + 1 - _min
         try:
             if trans_type == TransformersType.LOG:
                 data = np.log(data)
             elif trans_type == TransformersType.SQRT:
                 data = np.sqrt(data)
-            elif trans_type == TransformersType.BOX_PLOT:
+            elif trans_type == TransformersType.BOX_COX:
                 data = stats.boxcox(data)[0]
         except Exception as e:
             print('transform can not be applied')
@@ -97,9 +100,9 @@ class BasedDataset:
             else:
                 print('pca data frame is not provided')
         else:
-            _X = self.df.copy()
+            _X = self.df.copy().drop(labels=[self.target_col], axis=1)
 
-        _y = self.origin_df[self.target_col].copy()
+        _y = self.df_main[self.target_col].copy()
 
         return _X, _y
 
@@ -115,7 +118,7 @@ class BasedDataset:
 
     @property
     def df(self):
-        return self._df.drop(self.target_col, axis=1)
+        return self._df
 
     @df.setter
     def df(self, df: DataFrame):
@@ -130,12 +133,12 @@ class BasedDataset:
         self._pca = value
 
     @property
-    def origin_df(self):
-        return self._origin_df
+    def df_main(self):
+        return self._df_main
 
-    @origin_df.setter
-    def origin_df(self, value):
-        self._origin_df = value
+    @df_main.setter
+    def df_main(self, value):
+        self._df_main = value
 
     @property
     def dataset_address(self):
@@ -163,7 +166,7 @@ class BasedDataset:
 
     @property
     def targets(self):
-        return self.origin_df[self.target_col]
+        return self.df_main[self.target_col]
 
     @property
     def about(self):

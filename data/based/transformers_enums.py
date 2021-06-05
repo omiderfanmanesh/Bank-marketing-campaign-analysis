@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class TransformersType(Enum):
-    LOG = 0
-    BOX_PLOT = 1
-    SQRT = 2
+    NONE = 0
+    LOG = 1
+    BOX_COX = 2
+    SQRT = 3

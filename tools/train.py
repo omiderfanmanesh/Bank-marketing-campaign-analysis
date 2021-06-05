@@ -8,6 +8,8 @@ from model import SVM
 def main():
     bank = load(cfg)
     bank.load_dataset()
+    bank.age()
+    bank.duration()
     model = SVM(cfg=cfg)
 
     encoder = Encoders(cdg=cfg)

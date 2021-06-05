@@ -4,6 +4,9 @@
 from pprint import pprint
 
 import pandas as pd
+from pandas.api.types import is_numeric_dtype
+
+from data.based.transformers_enums import TransformersType
 
 
 class BasedAnalyzer:
@@ -14,38 +17,50 @@ class BasedAnalyzer:
     def head(self):
         self.df.head()
 
-    def description(self):
-        if self.dataset.dataset_description_file is not None:
+    def description(self, col=None):
+        if self.dataset.dataset_description_file is not None and col is None:
             print("--------------- about dataset  -----------------")
             print(self.dataset.about)
             print('\n')
+            print("--------------- description.txt ----------------")
+            pprint(self.info())
+            print('\n')
+            print("--------------- description.txt ----------------")
+            pprint(self.describe_dataframe())
+            print('\n')
 
-        print("--------------- description.txt ----------------")
-        pprint(self.info())
+        if col is None:
+            print("--------------- nan Values -----------------")
+            print(self.missing_values().head(20))
+            print('\n')
+        else:
+            print("--------------- nan Values of {} -----------------".format(col))
+            print(self.missing_values(col=col))
+            print('\n')
+
+        if col is None:
+            print("--------------- duplicates -----------------")
+        else:
+            print("--------------- duplicates of {} -----------------".format(col))
+
+        print('Total number of duplicates: ', self.duplicates(col))
         print('\n')
 
-        print("--------------- description.txt ----------------")
-        pprint(self.describe_dataframe())
-        print('\n')
+        if col is None:
+            print("------ Numerical/Categorical Features ------")
+            print('Numerical Features: {}'.format(self.dataset.numerical_features()))
+            print('number of Numerical Features: {}'.format(self.dataset.numerical_features().__len__()))
+            print('Categorical Features: {}'.format(self.dataset.categorical_features()))
+            print('number of Categorical Features: {}'.format(self.dataset.categorical_features().__len__()))
+            print('\n')
 
-        print("--------------- nan Values -----------------")
-        print(self.missing_values().head(20))
-        print('\n')
+        if col is None:
+            print("--------------- skew & kurt -----------------")
+        else:
+            print("--------------- skew & kurt of {} -----------------".format(col))
 
-        print("--------------- duplicates -----------------")
-        print('Total number of duplicates: ', self.duplicates())
-        print('\n')
-
-        print("------ Numerical/Categorical Features ------")
-        print('Numerical Features: {}'.format(self.dataset.numerical_features()))
-        print('number of Numerical Features: {}'.format(self.dataset.numerical_features().__len__()))
-        print('Categorical Features: {}'.format(self.dataset.categorical_features()))
-        print('number of Categorical Features: {}'.format(self.dataset.categorical_features().__len__()))
-        print('\n')
-
-        print("--------------- skew & kurt -----------------")
         print('calculate skewness and kurtosis of numerical features')
-        print(self.skew_kurt())
+        print(self.skew_kurt(col=col))
         print(
             '\n* skewness is a measure of the asymmetry of the probability distribution of a real-valued random variable '
             'about its mean. \nnegative skew commonly indicates that the tail is on the left side of the distribution, '
@@ -56,25 +71,45 @@ class BasedAnalyzer:
               'it from a sample from a population.')
         print('\n')
 
-        print("----------------- quantiles -----------------")
-        print(self.quantiles())
+        if col is None:
+            print("----------------- quantiles -----------------")
+        else:
+            print("--------------- quantiles of {} -----------------".format(col))
+
+        print(self.quantiles(col=col))
         print('\n')
 
-        print("----------------- is target balanced? -----------------")
-        print(self.count_by(self.target_col))
-        print('\n')
+        if col is None:
+            print("----------------- is target balanced? -----------------")
+            print(self.count_by(col=self.target_col))
+            print('\n')
+        else:
+            print("----------------- Top 10 values in column of {} -----------------".format(col))
+            print(self.count_by(col=col).head(10))
+            print('\n')
 
     def count_by(self, col):
-        return self.df[col].value_counts()
+        new_df = self.df[col].value_counts().sort_values(ascending=False).reset_index()
+        new_df.columns = ['value', 'counts']
+        return new_df
 
-    def missing_values(self):
-        total = self.df.isnull().sum().sort_values(ascending=False)
-        percent = (self.df.isnull().sum() / self.df.isnull().count()).sort_values(ascending=False)
-        missing_data = pd.concat([total, percent], axis=1, keys=['Total', 'Percent'])
+    def missing_values(self, col=None):
+        if col is None:
+            total = self.df.isnull().sum().sort_values(ascending=False)
+            percent = (self.df.isnull().sum() / self.df.isnull().count()).sort_values(ascending=False)
+            missing_data = pd.concat([total, percent], axis=1, keys=['Total', 'Percent'])
+        else:
+            total = self.df[col].isnull().sum()
+            percent = (self.df[col].isnull().sum() / self.df[col].isnull().count())
+
+            missing_data = {'total': total, 'percentage': percent}
         return missing_data
 
-    def duplicates(self):
-        dup = self.df.duplicated().sum()
+    def duplicates(self, col=None):
+        if col is None:
+            dup = self.df.duplicated().sum()
+        else:
+            dup = self.df[col].duplicated().sum()
         return dup
 
     def describe_dataframe(self):
@@ -86,14 +121,44 @@ class BasedAnalyzer:
     def info(self):
         return self.df.info()
 
-    def skew_kurt(self):
-        kurt = self.df.kurt()
-        skew = self.df.skew()
+    def skew_kurt(self, col=None):
 
-        return pd.concat([skew, kurt], axis=1, keys=['skew', 'kurt']).sort_values(by=['skew'], ascending=False)
+        if col is None:
+            kurt = self.df.kurt()
+            skew = self.df.skew()
 
-    def quantiles(self):
-        return self.df.quantile([.1, .25, .5, .75], axis=0).T
+            skew_log = self.dataset.transform(skew, TransformersType.LOG)
+            skew_sqrt = self.dataset.transform(skew, TransformersType.SQRT)
+            # skew_box_cox = self.dataset.transform(skew, TransformersType.BOX_COX)
+            kurt_log = self.dataset.transform(kurt, TransformersType.LOG)
+            kurt_sqrt = self.dataset.transform(kurt, TransformersType.SQRT)
+            # kurt_box_cox = self.dataset.transform(kurt, TransformersType.BOX_COX)
+
+            return pd.concat([skew, skew_log, skew_sqrt, kurt, kurt_log, kurt_sqrt], axis=1,
+                             keys=['skew', 'skew log', 'skew sqrt', 'kurt', 'kurt log', 'kurt sqrt']).sort_values(
+                by=['skew'],
+                ascending=False)
+        else:
+            if is_numeric_dtype(self.df[col]):
+                kurt = self.df[col].kurt()
+                skew = self.df[col].skew()
+                return {
+                    'skew': skew,
+                    'kurt': kurt
+                }
+            else:
+                return '{} is categorical feature'.format(col)
+
+    def quantiles(self, col):
+        if col is None:
+            return self.df.quantile([.1, .25, .5, .75], axis=0).T
+        else:
+            if is_numeric_dtype(self.df[col]):
+                new_df = self.df[col].quantile([.1, .25, .5, .75]).reset_index()
+                new_df.columns = ['quantile', 'values']
+                return new_df
+            else:
+                return '{} is categorical feature'.format(col)
 
     @property
     def target_col(self):
@@ -105,7 +170,7 @@ class BasedAnalyzer:
 
     @property
     def df(self):
-        return self._dataset.origin_df
+        return self._dataset.df
 
     @property
     def dataset(self):
