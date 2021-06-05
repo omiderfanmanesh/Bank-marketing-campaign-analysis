@@ -39,30 +39,50 @@ _C.SVM.MODE = TrainingMode.CLASSIFICATION
 _C.SVM.KERNEL = 'rbf'
 _C.SVM.GAMMA = 'scale'
 _C.SVM.VERBOSE = True
-
+# ---------------------------------------------------------------------------- #
 _C.RANDOM_FOREST = CN()
 _C.RANDOM_FOREST.NAME = 'RANDOM_FOREST'
 _C.RANDOM_FOREST.MODE = TrainingMode.CLASSIFICATION
 
-_C.RANDOM_FOREST.n_estimators = 100
-_C.RANDOM_FOREST.criterion = "gini"
-_C.RANDOM_FOREST.max_depth = None
-_C.RANDOM_FOREST.min_samples_split = 2
-_C.RANDOM_FOREST.min_samples_leaf = 1
-_C.RANDOM_FOREST.min_weight_fraction_leaf = 0.0
-_C.RANDOM_FOREST.max_features = "auto"
-_C.RANDOM_FOREST.max_leaf_nodes = None
-_C.RANDOM_FOREST.min_impurity_decrease = 0.0
-_C.RANDOM_FOREST.min_impurity_split = None
-_C.RANDOM_FOREST.bootstrap = True
-_C.RANDOM_FOREST.oob_score = False
-_C.RANDOM_FOREST.n_jobs = None
-_C.RANDOM_FOREST.random_state = None
-_C.RANDOM_FOREST.verbose = 0
-_C.RANDOM_FOREST.warm_start = False
-_C.RANDOM_FOREST.class_weight = None
-_C.RANDOM_FOREST.ccp_alpha = 0.0
-_C.RANDOM_FOREST.max_samples = None
+_C.RANDOM_FOREST.N_ESTIMATORS = 100  # default = 100
+_C.RANDOM_FOREST.CRITERION = "gini"  # default = 'gini
+_C.RANDOM_FOREST.MAX_DEPTH = None  # default = None
+_C.RANDOM_FOREST.MIN_SAMPLES_SPLIT = 2  # default = 2
+_C.RANDOM_FOREST.MIN_SAMPLES_LEAF = 1  # default = 1
+_C.RANDOM_FOREST.MIN_WEIGHT_FRACTION_LEAF = 0.0  # default = 0.0
+_C.RANDOM_FOREST.MAX_FEATURES = "auto"  # default =  "auto"
+_C.RANDOM_FOREST.MAX_LEAF_NODES = None  # default = None
+_C.RANDOM_FOREST.MIN_IMPURITY_DECREASE = 0.0  # default = 0.0
+_C.RANDOM_FOREST.MIN_IMPURITY_SPLIT = None  # default = None
+_C.RANDOM_FOREST.BOOTSTRAP = True  # default = True
+_C.RANDOM_FOREST.OOB_SCORE = False  # default = False
+_C.RANDOM_FOREST.N_JOBS = None  # default = None
+_C.RANDOM_FOREST.RANDOM_STATE = None  # default = None
+_C.RANDOM_FOREST.VERBOSE = 0  # default = 0
+_C.RANDOM_FOREST.WARM_START = False  # default = False
+_C.RANDOM_FOREST.CLASS_WEIGHT = None  # default = None
+_C.RANDOM_FOREST.CCP_ALPHA = 0.0  # default = 0.0
+_C.RANDOM_FOREST.MAX_SAMPLES = None  # default = None
+# ---------------------------------------------------------------------------- #
+_C.LOGISTIC_REGRESSION = CN()
+_C.LOGISTIC_REGRESSION.NAME = 'LOGISTIC REGRESSION'
+_C.LOGISTIC_REGRESSION.MODE = TrainingMode.CLASSIFICATION  # 
+_C.LOGISTIC_REGRESSION.PENALTY = 'l2'  # default = 'l2'
+_C.LOGISTIC_REGRESSION.DUAL = False  # default = False
+_C.LOGISTIC_REGRESSION.TOL = 1e-4  # default = 1e-4
+_C.LOGISTIC_REGRESSION.C = 1.0  # default = 1.0 
+_C.LOGISTIC_REGRESSION.FIT_INTERCEPT = True  # default = True
+_C.LOGISTIC_REGRESSION.INTERCEPT_SCALING = 1  # default = 1
+_C.LOGISTIC_REGRESSION.CLASS_WEIGHT = None  # default = None
+_C.LOGISTIC_REGRESSION.RANDOM_STATE = None  # default = None
+_C.LOGISTIC_REGRESSION.SOLVER = 'lbfgs'  # default = 'lbfgs'
+_C.LOGISTIC_REGRESSION.MAX_ITER = 100  # default = 100
+_C.LOGISTIC_REGRESSION.MULTI_CLASS = 'auto'  # default = 'auto'
+_C.LOGISTIC_REGRESSION.VERBOSE = 0  # default = 0
+_C.LOGISTIC_REGRESSION.WARM_START = False  # default = False
+_C.LOGISTIC_REGRESSION.N_JOBS = None  # default = None
+_C.LOGISTIC_REGRESSION.L1_RATIO = None  # default = None
+# ---------------------------------------------------------------------------- #
 
 # ---------------------------------------------------------------------------- #
 # metric

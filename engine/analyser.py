@@ -1,9 +1,10 @@
 from data.based.based_dataset import BasedDataset
+from data.preprocessing import Encoders, Scalers
 from eda.based.based_analyzer import BasedAnalyzer
 from eda.based.based_plots import BasedPlot
 
 
-def do_analysis(dataset: BasedDataset, plots: BasedPlot, analyzer: BasedAnalyzer, encoder, scaler):
+def do_analysis(dataset: BasedDataset, plots: BasedPlot, analyzer: BasedAnalyzer, encoder: Encoders, scaler: Scalers):
     # analyzer.description()
 
     # plots.kernel_density_estimation(x='balance', y='age')
