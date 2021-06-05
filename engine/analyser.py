@@ -1,0 +1,19 @@
+from data.based.based_dataset import BasedDataset
+from eda.based.based_analyzer import BasedAnalyzer
+from eda.based.based_plots import BasedPlot
+
+
+def do_analysis(dataset: BasedDataset, plots: BasedPlot, analyzer: BasedAnalyzer, encoder, scaler):
+    # analyzer.description()
+
+    # plots.kernel_density_estimation(x='balance', y='age')
+    # plots.duration()
+    dataset.duration()
+    # analyzer.duration()
+
+    analyzer.description()
+    # _data = encoder.do_encode(data=dataset.df, y=dataset.targets.values)
+    # dataset.encoded_data = _data
+    # _data = scaler.do_scale(data=_data)
+    # dataset.scaled_data = _data
+    # plots.corr(data=dataset.scaled_data)
