@@ -1,5 +1,4 @@
 from category_encoders import OneHotEncoder, OrdinalEncoder, BinaryEncoder
-from pandas import DataFrame
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
@@ -28,65 +27,69 @@ class Encoders:
 
         return le, le_name
 
-    def __encoder(self, enc, data=None, y=None, X_train=None, X_test=None, y_train=None, y_test=None):
+    def __get_encoded_data(self, enc, data, y, X_train=None, X_test=None, y_train=None, y_test=None):
+        train_enc, test_enc, data_enc = None, None, None
+        if isinstance(enc, LabelEncoder):
+            if data is None and y is None:
+                enc.fit(X_train)
+                train_enc = enc.transform(X_train)
+                test_enc = None
+                if X_test is not None:
+                    test_enc = enc.transform(X_test)
+            else:
+                enc.fit(data)
+                data_enc = enc.transform(data)
+        else:
+            if data is None and y is None:
+                enc.fit(X_train, y_train)
+                train_enc = enc.transform(X_train, y_train)
+                test_enc = None
+                if X_test is not None:
+                    test_enc = enc.transform(X_test, y_test)
+            else:
+                enc.fit(data, y)
+                data_enc = enc.transform(data, y)
         if data is None and y is None:
-            return self.__encoder_by(enc=enc, X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
+            return train_enc, test_enc
         else:
-            return self.__encoder_all(enc=enc, data=data, y=y)
+            return data_enc
 
-    def __encoder_by(self, enc, X_train=None, X_test=None, y_train=None, y_test=None):
-        if isinstance(enc, LabelEncoder):
-            enc.fit(X_train)
-            train_enc = enc.transform(X_train)
-            test_enc = None
-            if X_test is not None:
-                test_enc = enc.transform(X_test)
-        else:
-            enc.fit(X_train, y_train)
-            train_enc = enc.transform(X_train, y_train)
-            test_enc = None
-            if X_test is not None:
-                test_enc = enc.transform(X_test, y_test)
-        return train_enc, test_enc
+    def __encode_by_configs(self, data, y, X_train=None, X_test=None, y_train=None, y_test=None):
+        for col in tqdm(self._cfg.ENCODER):
+            encode_type = self._cfg.ENCODER[col]
+            col = col.lower()
+            enc, enc_name = self.__get_encoder(encoder_type=encode_type, col=col)
+            if encode_type == EncoderTypes.LABEL:
+                if data is None and y is None:
+                    train_val = X_train[col].values
+                    test_val = X_test[col].values
+                    X_train[col], X_test[col] = self.__get_encoded_data(enc=enc, data=None, y=None, X_train=train_val,
+                                                                        X_test=test_val)
+                else:
+                    train_val = data[col].values
+                    data[col] = self.__get_encoded_data(enc=enc, data=train_val, y=y)
+            else:
+                if data is None and y is None:
+                    X_train, X_test = self.__get_encoded_data(enc=enc, data=None, y=None, X_train=X_train,
+                                                              X_test=X_test,
+                                                              y_train=y_train, y_test=y_test)
+                else:
+                    data = self.__get_encoded_data(enc=enc, data=data, y=y)
 
-    def __encoder_all(self, enc, data: DataFrame, y: DataFrame):
-        if isinstance(enc, LabelEncoder):
-            enc.fit(data)
-            data_enc = enc.transform(data)
+        if data is None and y is None:
+            return X_train, X_test
         else:
-            enc.fit(data, y)
-            data_enc = enc.transform(data, y)
-        return data_enc
+            return data
 
     def do_encode(self, data=None, y=None, X_train=None, X_test=None, y_train=None, y_test=None):
-        if data is None and y is None:
-            return self.__encode_by(X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
-        else:
-            return self.__encode_all(data=data, y=y)
 
-    def __encode_by(self, X_train=None, X_test=None, y_train=None, y_test=None):
-        for col in tqdm(self._cfg.ENCODER):
-            encode_type = self._cfg.ENCODER[col]
-            col = col.lower()
-            enc, enc_name = self.__get_encoder(encoder_type=encode_type, col=col)
-            if encode_type == EncoderTypes.LABEL:
-                train_val = X_train[col].values
-                test_val = X_test[col].values
-                X_train[col], X_test[col] = self.__encoder_by(enc=enc, X_train=train_val, X_test=test_val)
-            else:
-                X_train, X_test = self.__encoder_by(enc=enc, X_train=X_train, X_test=X_test, y_train=y_train,
-                                                    y_test=y_test)
+        params = {
+            'data': data,
+            'y': y,
+            'X_train': X_train,
+            'X_test': X_test,
+            'y_train': y_train,
+            'y_test': y_test
+        }
 
-        return X_train, X_test
-
-    def __encode_all(self, data, y):
-        for col in tqdm(self._cfg.ENCODER):
-            encode_type = self._cfg.ENCODER[col]
-            col = col.lower()
-            enc, enc_name = self.__get_encoder(encoder_type=encode_type, col=col)
-            if encode_type == EncoderTypes.LABEL:
-                train_val = data[col].values
-                data[col] = self.__encoder_all(enc=enc, data=train_val, y=y)
-            else:
-                data = self.__encoder_all(enc=enc, data=data, y=y)
-        return data
+        return self.__encode_by_configs(**params)
