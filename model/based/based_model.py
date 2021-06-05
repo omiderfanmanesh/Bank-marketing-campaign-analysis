@@ -64,7 +64,7 @@ class BasedModel:
                                               callbacks=callbacks)
         return best_params
 
-    def report_best_params(self, optimizer, X, y, title, callbacks=None):
+    def report_best_params(self, optimizer, X, y, title='', callbacks=None):
         """
         A wrapper for measuring time and performances of different optimizers
 

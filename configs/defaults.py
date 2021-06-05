@@ -2,6 +2,8 @@ from yacs.config import CfgNode as CN
 
 from data.based import EncoderTypes, ScaleTypes
 from model.based import MetricTypes, TrainingMode
+from model.based import ModelSelection
+from utils import RuntimeMode
 
 # -----------------------------------------------------------------------------
 # Config definition
@@ -13,8 +15,12 @@ _C = CN()
 # BASIC CONFIG
 # -----------------------------------------------------------------------------
 _C.BASIC = CN()
-_C.BASIC.SEED = 2022
+_C.BASIC.SEED = 2021
 _C.BASIC.PCA = False
+_C.BASIC.RAND_STATE = 2021
+_C.BASIC.MODEL_SELECTION = ModelSelection.DECISION_TREE
+_C.BASIC.RUNTIME_MODE = RuntimeMode.FINE_TUNE
+
 # -----------------------------------------------------------------------------
 # MODEL CONFIG
 # -----------------------------------------------------------------------------
@@ -61,7 +67,7 @@ _C.RANDOM_FOREST.MIN_IMPURITY_SPLIT = None  # default = None
 _C.RANDOM_FOREST.BOOTSTRAP = True  # default = True
 _C.RANDOM_FOREST.OOB_SCORE = False  # default = False
 _C.RANDOM_FOREST.N_JOBS = None  # default = None
-_C.RANDOM_FOREST.RANDOM_STATE = None  # default = None
+_C.RANDOM_FOREST.RANDOM_STATE = _C.BASIC.RAND_STATE  # default = None
 _C.RANDOM_FOREST.VERBOSE = 0  # default = 0
 _C.RANDOM_FOREST.WARM_START = False  # default = False
 _C.RANDOM_FOREST.CLASS_WEIGHT = None  # default = None
@@ -83,7 +89,7 @@ _C.LOGISTIC_REGRESSION.C = 1.0  # default = 1.0
 _C.LOGISTIC_REGRESSION.FIT_INTERCEPT = True  # default = True
 _C.LOGISTIC_REGRESSION.INTERCEPT_SCALING = 1  # default = 1
 _C.LOGISTIC_REGRESSION.CLASS_WEIGHT = None  # default = None
-_C.LOGISTIC_REGRESSION.RANDOM_STATE = None  # default = None
+_C.LOGISTIC_REGRESSION.RANDOM_STATE = _C.BASIC.RAND_STATE  # default = None
 _C.LOGISTIC_REGRESSION.SOLVER = 'lbfgs'  # default = 'lbfgs'
 _C.LOGISTIC_REGRESSION.MAX_ITER = 100  # default = 100
 _C.LOGISTIC_REGRESSION.MULTI_CLASS = 'auto'  # default = 'auto'
@@ -106,7 +112,7 @@ _C.DECISION_TREE.MIN_SAMPLES_SPLIT = 2  # min_samples_split : int or float, defa
 _C.DECISION_TREE.MIN_SAMPLES_LEAF = 1  # min_samples_leaf : int or float, default=1
 _C.DECISION_TREE.MIN_WEIGHT_FRACTION_LEAF = 0.0  # min_weight_fraction_leaf : float, default=0.0
 _C.DECISION_TREE.MAX_FEATURES = None  # max_features : int, float or {"auto", "sqrt", "log2"}, default=None
-_C.DECISION_TREE.RANDOM_STATE = None  # random_state : int, RandomState instance, default=None
+_C.DECISION_TREE.RANDOM_STATE = _C.BASIC.RAND_STATE  # random_state : int, RandomState instance, default=None
 _C.DECISION_TREE.MAX_LEAF_NODES = None  # max_leaf_nodes : int, default=None
 _C.DECISION_TREE.MIN_IMPURITY_DECREASE = 0.0  # min_impurity_decrease : float, default=0.0
 _C.DECISION_TREE.MIN_IMPURITY_SPLIT = None  # min_impurity_split : float, default=0
@@ -140,7 +146,7 @@ _C.ENCODER.LOAN = EncoderTypes.LABEL
 _C.ENCODER.CONTACT = EncoderTypes.LABEL
 _C.ENCODER.MONTH = EncoderTypes.LABEL
 _C.ENCODER.POUTCOME = EncoderTypes.LABEL
-# _C.ENCODER.Y = EncoderTypes.LABEL # if your target is categorical
+_C.ENCODER.Y = EncoderTypes.LABEL  # if your target is categorical
 # -----------------------------------------------------------------------------
 # SCALER /
 # -----------------------------------------------------------------------------
