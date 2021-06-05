@@ -58,11 +58,15 @@ class Encoders:
         for col in tqdm(self._cfg.ENCODER):
             encode_type = self._cfg.ENCODER[col]
             col = col.lower()
+            if col == self._cfg.DATASET.TARGET:
+                continue
             enc, enc_name = self.__get_encoder(encoder_type=encode_type, col=col)
             if encode_type == EncoderTypes.LABEL:
                 if data is None and y is None:
+
                     train_val = X_train[col].values
                     test_val = X_test[col].values
+
                     X_train[col], X_test[col] = self.__get_encoded_data(enc=enc, data=None, y=None, X_train=train_val,
                                                                         X_test=test_val)
                 else:
@@ -93,3 +97,7 @@ class Encoders:
         }
 
         return self.__encode_by_configs(**params)
+
+    def custom_encoding(self, data, col, encode_type):
+        enc, enc_name = self.__get_encoder(encoder_type=encode_type, col=col)
+        return enc.fit_transform(data[col])

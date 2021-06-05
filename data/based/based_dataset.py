@@ -8,7 +8,6 @@ import pandas as pd
 from pandas import DataFrame
 from scipy import stats
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
 
 from data.based.file_types import FileTypes
 from data.based.transformers_enums import TransformersType
@@ -102,7 +101,7 @@ class BasedDataset:
         else:
             _X = self.df.copy().drop(labels=[self.target_col], axis=1)
 
-        _y = self.df_main[self.target_col].copy()
+        _y = self.df[self.target_col].copy()
 
         return _X, _y
 
@@ -111,10 +110,6 @@ class BasedDataset:
 
     def __open_txt_file(self, desc):
         return open(desc, 'r').read()
-
-    def __target_encoding(self):
-        _le = LabelEncoder()
-        return _le.fit_transform(self.targets)
 
     @property
     def df(self):

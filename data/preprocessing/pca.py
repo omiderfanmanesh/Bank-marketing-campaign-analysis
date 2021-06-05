@@ -5,7 +5,7 @@ from sklearn.decomposition import PCA as skl_pca
 class PCA:
     def __init__(self, cfg):
         self.n_components = cfg.PCA.N_COMPONENTS
-        self.pca = skl_pca(n_components=self.n_components, random_state=cfg.BASIC.SEED)
+        self.pca = skl_pca(n_components=self.n_components, random_state=cfg.BASIC.RAND_STATE)
 
     def do_pca(self, data):
         _components = self.pca.fit_transform(data)
