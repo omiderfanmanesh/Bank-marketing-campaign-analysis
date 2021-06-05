@@ -2,7 +2,7 @@ from configs import cfg
 from data.loader import load
 from data.preprocessing import Encoders, Scalers, PCA
 from engine.trainer import do_train
-from model import LogisticRegression
+from model import DecisionTree
 
 
 def main():
@@ -10,7 +10,7 @@ def main():
     bank.load_dataset()
     bank.age()
     bank.duration()
-    model = LogisticRegression(cfg=cfg)
+    model = DecisionTree(cfg=cfg)
 
     encoder = Encoders(cdg=cfg)
     scaler = Scalers(cfg=cfg)
