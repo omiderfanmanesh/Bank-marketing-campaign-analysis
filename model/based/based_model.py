@@ -53,16 +53,18 @@ class BasedModel:
     def hyper_parameter_tuning(self, X, y, title=None, method=TuningMode.GRID_SEARCH):
         opt = None
         callbacks = None
+        if self.fine_tune_params:
+            if method == TuningMode.GRID_SEARCH:
+                opt = GridSearchCV(estimator=self.model, param_grid=self.fine_tune_params, cv=5, scoring='accuracy')
+            elif method == TuningMode.BAYES_SEARCH:
+                opt = BayesSearchCV(self.model, self.fine_tune_params)
+                callbacks = [VerboseCallback(100), DeadlineStopper(60 * 10)]
 
-        if method == TuningMode.GRID_SEARCH:
-            opt = GridSearchCV(estimator=self.model, param_grid=self.fine_tune_params, cv=5, scoring='accuracy')
-        elif method == TuningMode.BAYES_SEARCH:
-            opt = BayesSearchCV(self.model, self.fine_tune_params)
-            callbacks = [VerboseCallback(100), DeadlineStopper(60 * 10)]
-
-        best_params = self.report_best_params(optimizer=opt, X=X, y=y, title=title,
-                                              callbacks=callbacks)
-        return best_params
+            best_params = self.report_best_params(optimizer=opt, X=X, y=y, title=title,
+                                                  callbacks=callbacks)
+            return best_params
+        else:
+            print('There are no params for tuning')
 
     def report_best_params(self, optimizer, X, y, title='', callbacks=None):
         """
@@ -83,14 +85,18 @@ class BasedModel:
         best_score = optimizer.best_score_
         best_score_std = d.iloc[optimizer.best_index_].std_test_score
         best_params = optimizer.best_params_
-        print((title + " took %.2f seconds,  candidates checked: %d, best CV score: %.3f "
-               + u"\u00B1" + " %.3f") % (time() - start,
-                                         len(optimizer.cv_results_['params']),
-                                         best_score,
-                                         best_score_std))
-        print('Best parameters:')
-        pprint(best_params)
-        print()
+        if best_params:
+            print((title + " took %.2f seconds,  candidates checked: %d, best CV score: %.3f "
+                   + u"\u00B1" + " %.3f") % (time() - start,
+                                             len(optimizer.cv_results_['params']),
+                                             best_score,
+                                             best_score_std))
+            print('Best parameters:')
+            pprint(best_params)
+            print()
+        else:
+            print('There are no params provided')
+
         return best_params
 
     @property

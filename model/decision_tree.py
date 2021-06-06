@@ -31,8 +31,8 @@ class DecisionTree(BasedModel):
 
         self.name = cfg.DECISION_TREE.NAME
 
-        for _k in cfg.DECISION_TREE.FINE_TUNE:
-            _param = cfg.DECISION_TREE.FINE_TUNE[_k]
+        for _k in cfg.DECISION_TREE.HYPER_PARAM_TUNING:
+            _param = cfg.DECISION_TREE.HYPER_PARAM_TUNING[_k]
 
             if _param is not None:
                 _param = [*_param]

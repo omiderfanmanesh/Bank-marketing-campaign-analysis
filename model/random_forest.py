@@ -38,8 +38,8 @@ class RandomForest(BasedModel):
         elif self._training_mode == TrainingMode.REGRESSION:
             self.model = RandomForestRegressor(**self._params)
 
-        for _k in cfg.RANDOM_FOREST.FINE_TUNE:
-            _param = cfg.RANDOM_FOREST.FINE_TUNE[_k]
+        for _k in cfg.RANDOM_FOREST.HYPER_PARAM_TUNING:
+            _param = cfg.RANDOM_FOREST.HYPER_PARAM_TUNING[_k]
 
             if _param is not None:
                 _param = [*_param]
