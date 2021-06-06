@@ -26,13 +26,14 @@ class LogisticRegression(BasedModel):
             'l1_ratio': cfg.LOGISTIC_REGRESSION.L1_RATIO,
 
         }
+        self.name = cfg.LOGISTIC_REGRESSION.NAME
 
         self._training_mode = cfg.LOGISTIC_REGRESSION.MODE
         if self._training_mode == TrainingMode.CLASSIFICATION:
             self.model = lg(**self._params)
 
-        for _k in cfg.LOGISTIC_REGRESSION.FINE_TUNE:
-            _param = cfg.LOGISTIC_REGRESSION.FINE_TUNE[_k]
+        for _k in cfg.LOGISTIC_REGRESSION.HYPER_PARAM_TUNING:
+            _param = cfg.LOGISTIC_REGRESSION.HYPER_PARAM_TUNING[_k]
 
             if _param is not None:
                 _param = [*_param]
