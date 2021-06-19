@@ -1,3 +1,6 @@
+import numpy as np
+import pandas as pd
+
 from eda.based import BasedAnalyzer
 
 
@@ -16,6 +19,26 @@ class BankAnalyzer(BasedAnalyzer):
 
     def education(self):
         self.description(col='education')
+
+        pivot = self.df[['education', 'y']].groupby(['education', 'y']).size()
+        print('Pivot age/education (min)')
+        print(pivot)
+        print()
+
+        pivot = pd.pivot_table(data=self.df, values=['age'], index=['education'], columns=['y'], aggfunc=np.min)
+        print('Pivot age/education (min)')
+        print(pivot)
+        print()
+
+        pivot = pd.pivot_table(data=self.df, values=['age'], index=['education'], columns=['y'], aggfunc=np.max)
+        print('Pivot age/education (max)')
+        print(pivot)
+        print()
+
+        pivot = pd.pivot_table(data=self.df, values=['age'], index=['education'], columns=['y'], aggfunc=np.mean)
+        print('Pivot age/education (mean)')
+        print(pivot)
+        print()
 
     def default(self):
         self.description(col='default')

@@ -3,6 +3,7 @@
 
 from pprint import pprint
 
+import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 
@@ -85,7 +86,7 @@ class BasedAnalyzer:
             print('\n')
         else:
             print("----------------- Top 10 values in column of {} -----------------".format(col))
-            print(self.count_by(col=col).head(10))
+            print(self.count_by(col=col).head(15))
             print('\n')
 
     def count_by(self, col):
@@ -129,13 +130,31 @@ class BasedAnalyzer:
 
             skew_log = self.dataset.transform(skew, TransformersType.LOG)
             skew_sqrt = self.dataset.transform(skew, TransformersType.SQRT)
-            # skew_box_cox = self.dataset.transform(skew, TransformersType.BOX_COX)
+            skew_box_cox = self.dataset.transform(skew, TransformersType.BOX_COX)
+
+            axis = np.array(skew.axes[0])
+            skew_box_cox = np.array(skew_box_cox)
+            skew_box_cox_dic = {}
+            for ax, val in zip(axis, skew_box_cox):
+                skew_box_cox_dic[ax] = val
+
+            skew_box_cox = pd.Series(skew_box_cox_dic)
+
             kurt_log = self.dataset.transform(kurt, TransformersType.LOG)
             kurt_sqrt = self.dataset.transform(kurt, TransformersType.SQRT)
-            # kurt_box_cox = self.dataset.transform(kurt, TransformersType.BOX_COX)
+            kurt_box_cox = self.dataset.transform(kurt, TransformersType.BOX_COX)
 
-            return pd.concat([skew, skew_log, skew_sqrt, kurt, kurt_log, kurt_sqrt], axis=1,
-                             keys=['skew', 'skew log', 'skew sqrt', 'kurt', 'kurt log', 'kurt sqrt']).sort_values(
+            axis = np.array(kurt.axes[0])
+            kurt_box_cox = np.array(kurt_box_cox)
+            kurt_box_cox_dic = {}
+            for ax, val in zip(axis, kurt_box_cox):
+                kurt_box_cox_dic[ax] = val
+
+            kurt_box_cox = pd.Series(kurt_box_cox_dic)
+
+            return pd.concat([skew, skew_log, skew_sqrt, skew_box_cox, kurt, kurt_log, kurt_sqrt, kurt_box_cox], axis=1,
+                             keys=['skew', 'skew log', 'skew sqrt', 'skew box cox ',
+                                   'kurt', 'kurt log', 'kurt sqrt', 'kurt box cox']).sort_values(
                 by=['skew'],
                 ascending=False)
         else:
