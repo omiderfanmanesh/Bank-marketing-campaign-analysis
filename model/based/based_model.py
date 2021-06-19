@@ -86,8 +86,8 @@ class BasedModel:
         callbacks = None
         if self.fine_tune_params:
             if method == TuningMode.GRID_SEARCH:
-                opt = GridSearchCV(estimator=self.model, param_grid=self.fine_tune_params, cv=self._fold,
-                                   scoring=self._cross_val_metrics)
+                opt = GridSearchCV(estimator=self.model, param_grid=self.fine_tune_params, cv=3, n_jobs=-1, verbose=3,
+                                   scoring=self.metric())
             elif method == TuningMode.BAYES_SEARCH:
                 opt = BayesSearchCV(self.model, self.fine_tune_params)
                 callbacks = [VerboseCallback(100), DeadlineStopper(60 * 10)]
