@@ -37,6 +37,55 @@ _C.DATASET.DATASET_BRIEF_DESCRIPTION = '../data/dataset/description.txt'
 _C.DATASET.TARGET = 'y'
 _C.DATASET.HAS_CATEGORICAL_TARGETS = True
 # _C.DATASET.DROP_COLS = ('y')
+
+# ---------------------------------------------------------------------------- #
+# metric
+# ---------------------------------------------------------------------------- #
+_C.EVALUATION = CN()
+
+_C.EVALUATION.METRIC = MetricTypes.F1_SCORE_MICRO
+_C.EVALUATION.CONFUSION_MATRIX = True
+"""
+'accuracy', 'balanced_accuracy',  'top_k_accuracy',
+ 'average_precision',  'neg_brier_score', 'f1',
+ 'f1_micro', 'f1_macro',  'f1_weighted',
+ 'f1_samples',  'neg_log_loss', 'precision',
+  'recall',  'jaccard', 'roc_auc',
+ 'roc_auc_ovr', 'roc_auc_ovo',  'roc_auc_ovr_weighted',
+ 'roc_auc_ovo_weighted'
+"""
+# -----------------------------------------------------------------------------
+# CATEGORICAL FEATURES ENCODER CONFIG / _C.ENCODER.{COLUMN NAME} = TYPE OF ENCODER
+# -----------------------------------------------------------------------------
+_C.ENCODER = CN()
+_C.ENCODER.JOB = EncoderTypes.LABEL
+_C.ENCODER.MARITAL = EncoderTypes.LABEL
+_C.ENCODER.EDUCATION = EncoderTypes.LABEL
+_C.ENCODER.DEFAULT = EncoderTypes.LABEL
+_C.ENCODER.HOUSING = EncoderTypes.LABEL
+_C.ENCODER.LOAN = EncoderTypes.LABEL
+_C.ENCODER.CONTACT = EncoderTypes.LABEL
+_C.ENCODER.MONTH = EncoderTypes.LABEL
+_C.ENCODER.POUTCOME = EncoderTypes.LABEL
+_C.ENCODER.Y = EncoderTypes.LABEL  # if your target is categorical
+# -----------------------------------------------------------------------------
+# SCALER /
+# -----------------------------------------------------------------------------
+_C.SCALER = CN()
+_C.SCALER = ScaleTypes.STANDARD
+
+# -----------------------------------------------------------------------------
+# DECOMPOSITION
+# -----------------------------------------------------------------------------
+_C.PCA = CN()
+_C.PCA.N_COMPONENTS = 0.8
+
+# ---------------------------------------------------------------------------- #
+# Misc options
+# ---------------------------------------------------------------------------- #
+# _C.OUTPUT_DIR = "../outputs"
+
+
 # ---------------------------------------------------------------------------- #
 # Models
 # ---------------------------------------------------------------------------- #
@@ -143,7 +192,7 @@ _C.LOGISTIC_REGRESSION.INTERCEPT_SCALING = 1  # float, default=1
 _C.LOGISTIC_REGRESSION.CLASS_WEIGHT = None  # dict or 'balanced', default=None
 _C.LOGISTIC_REGRESSION.RANDOM_STATE = _C.BASIC.RAND_STATE  # int, RandomState instance, default=None
 _C.LOGISTIC_REGRESSION.SOLVER = 'lbfgs'  # {'newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga'}, default='lbfgs'
-_C.LOGISTIC_REGRESSION.MAX_ITER = 100  # int, default=100
+_C.LOGISTIC_REGRESSION.MAX_ITER = 10000  # int, default=100
 _C.LOGISTIC_REGRESSION.MULTI_CLASS = 'auto'  # {'auto', 'ovr', 'multinomial'}, default='auto'
 _C.LOGISTIC_REGRESSION.VERBOSE = 0  # int, default=0
 _C.LOGISTIC_REGRESSION.WARM_START = False  # bool, default=False
@@ -198,49 +247,3 @@ _C.DECISION_TREE.HYPER_PARAM_TUNING.CLASS_WEIGHT = None
 _C.DECISION_TREE.HYPER_PARAM_TUNING.PRESORT = None
 _C.DECISION_TREE.HYPER_PARAM_TUNING.CCP_ALPHA = None
 # ---------------------------------------------------------------------------- #
-# ---------------------------------------------------------------------------- #
-# metric
-# ---------------------------------------------------------------------------- #
-_C.EVALUATION = CN()
-
-_C.EVALUATION.METRIC = MetricTypes.F1_SCORE_MACRO
-_C.EVALUATION.CONFUSION_MATRIX = True
-"""
-'accuracy', 'balanced_accuracy',  'top_k_accuracy',
- 'average_precision',  'neg_brier_score', 'f1',
- 'f1_micro', 'f1_macro',  'f1_weighted',
- 'f1_samples',  'neg_log_loss', 'precision',
-  'recall',  'jaccard', 'roc_auc',
- 'roc_auc_ovr', 'roc_auc_ovo',  'roc_auc_ovr_weighted',
- 'roc_auc_ovo_weighted'
-"""
-# -----------------------------------------------------------------------------
-# CATEGORICAL FEATURES ENCODER CONFIG / _C.ENCODER.{COLUMN NAME} = TYPE OF ENCODER
-# -----------------------------------------------------------------------------
-_C.ENCODER = CN()
-_C.ENCODER.JOB = EncoderTypes.LABEL
-_C.ENCODER.MARITAL = EncoderTypes.LABEL
-_C.ENCODER.EDUCATION = EncoderTypes.LABEL
-_C.ENCODER.DEFAULT = EncoderTypes.LABEL
-_C.ENCODER.HOUSING = EncoderTypes.LABEL
-_C.ENCODER.LOAN = EncoderTypes.LABEL
-_C.ENCODER.CONTACT = EncoderTypes.LABEL
-_C.ENCODER.MONTH = EncoderTypes.LABEL
-_C.ENCODER.POUTCOME = EncoderTypes.LABEL
-_C.ENCODER.Y = EncoderTypes.LABEL  # if your target is categorical
-# -----------------------------------------------------------------------------
-# SCALER /
-# -----------------------------------------------------------------------------
-_C.SCALER = CN()
-_C.SCALER = ScaleTypes.STANDARD
-
-# -----------------------------------------------------------------------------
-# DECOMPOSITION
-# -----------------------------------------------------------------------------
-_C.PCA = CN()
-_C.PCA.N_COMPONENTS = 0.8
-
-# ---------------------------------------------------------------------------- #
-# Misc options
-# ---------------------------------------------------------------------------- #
-# _C.OUTPUT_DIR = "../outputs"

@@ -66,7 +66,7 @@ class BasedModel:
         else:
             if metric_type == MetricTypes.F1_SCORE_BINARY:
                 return f1_score(y_true, y_pred, average="binary")
-            elif metric_type == MetricTypes.F1_SCORE_MACRO:
+            elif metric_type == MetricTypes.F1_SCORE_MICRO:
                 return f1_score(y_true, y_pred, average="micro")
             elif metric_type == MetricTypes.F1_SCORE_MACRO:
                 return f1_score(y_true, y_pred, average="macro")
