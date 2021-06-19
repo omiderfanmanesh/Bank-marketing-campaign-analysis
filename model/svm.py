@@ -35,7 +35,10 @@ class SVM(BasedModel):
 
                 if _param is not None:
                     _param = [*_param]
-                    self.fine_tune_params[_k.lower()] = [*_param]
+                    if _k is 'C':
+                        self.fine_tune_params[_k] = [*_param]
+                    else:
+                        self.fine_tune_params[_k.lower()] = [*_param]
 
         elif self._task_mode == TaskMode.REGRESSION:
             self._params = {
@@ -56,7 +59,9 @@ class SVM(BasedModel):
             self.name = cfg.SVR.NAME
             for _k in cfg.SVR.HYPER_PARAM_TUNING:
                 _param = cfg.SVR.HYPER_PARAM_TUNING[_k]
-
                 if _param is not None:
                     _param = [*_param]
-                    self.fine_tune_params[_k.lower()] = [*_param]
+                    if _k is 'C':
+                        self.fine_tune_params[_k] = [*_param]
+                    else:
+                        self.fine_tune_params[_k.lower()] = [*_param]
