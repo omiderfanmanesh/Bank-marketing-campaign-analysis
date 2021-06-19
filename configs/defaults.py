@@ -1,8 +1,8 @@
 from yacs.config import CfgNode as CN
 
 from data.based import EncoderTypes, ScaleTypes
-from model.based import MetricTypes, TrainingMode
-from model.based import ModelSelection
+from model.based import MetricTypes, TaskMode
+from model.based import Model
 from utils import RuntimeMode
 
 # -----------------------------------------------------------------------------
@@ -18,15 +18,16 @@ _C.BASIC = CN()
 _C.BASIC.SEED = 2021
 _C.BASIC.PCA = False
 _C.BASIC.RAND_STATE = 2021
-_C.BASIC.MODEL_SELECTION = ModelSelection.SVM
-_C.BASIC.RUNTIME_MODE = RuntimeMode.CROSS_VAL
-
+_C.BASIC.MODEL = Model.SVM
+_C.BASIC.RUNTIME_MODE = RuntimeMode.FEATURE_IMPORTANCE
+_C.BASIC.TASK_MODE = TaskMode.CLASSIFICATION
 # -----------------------------------------------------------------------------
 # MODEL CONFIG
 # -----------------------------------------------------------------------------
 _C.MODEL = CN()
 _C.MODEL.NUM_CLASSES = 2
 _C.MODEL.K_FOLD = 5
+
 # -----------------------------------------------------------------------------
 # Dataset
 # -----------------------------------------------------------------------------
@@ -41,7 +42,6 @@ _C.DATASET.HAS_CATEGORICAL_TARGETS = True
 # ---------------------------------------------------------------------------- #
 _C.SVM = CN()
 _C.SVM.NAME = 'SVM'
-_C.SVM.MODE = TrainingMode.CLASSIFICATION
 
 _C.SVM.C = 1.0  # float, default=1.0
 _C.SVM.KERNEL = 'rbf'  # {'linear', 'poly', 'rbf', 'sigmoid', 'precomputed'}, default='rbf'
@@ -58,6 +58,21 @@ _C.SVM.MAX_ITER = -1  # int, default=-1
 _C.SVM.DECISION_FUNCTION_SHAPE = 'ovr'  # {'ovo', 'ovr'}, default='ovr'
 _C.SVM.BREAK_TIES = False  # bool, default=False
 _C.SVM.RANDOM_STATE = _C.BASIC.RAND_STATE  # int or RandomState instance, default=None
+
+_C.SVR = CN()
+_C.SVR.NAME = 'SVM'
+
+_C.SVR.KERNEL = 'rbf'  # {'linear', 'poly', 'rbf', 'sigmoid', 'precomputed'}, default='rbf'
+_C.SVR.DEGREE = 3  # int, default=3
+_C.SVR.GAMMA = 'scale'  # {'scale', 'auto'} or float, default='scale'
+_C.SVR.COEF0 = 0.0  # float, default=0.0
+_C.SVR.TOL = 1e-3  # float, default=1e-3
+_C.SVR.C = 1.0  # float, default=1.0
+_C.SVR.EPSILON = 0.1  # float, default=0.1
+_C.SVR.SHRINKING = True  # bool, default=True
+_C.SVR.CACHE_SIZE = 200  # float, default=200
+_C.SVR.VERBOSE = True  # bool, default=False
+_C.SVR.MAX_ITER = -1  # int, default=-1
 
 _C.SVM.HYPER_PARAM_TUNING = CN()
 _C.SVM.HYPER_PARAM_TUNING.KERNEL = ('linear', 'poly', 'rbf', 'sigmoid')
@@ -76,7 +91,6 @@ _C.SVM.HYPER_PARAM_TUNING.BREAK_TIES = None
 # ---------------------------------------------------------------------------- #
 _C.RANDOM_FOREST = CN()
 _C.RANDOM_FOREST.NAME = 'RANDOM_FOREST'
-_C.RANDOM_FOREST.MODE = TrainingMode.CLASSIFICATION
 
 _C.RANDOM_FOREST.N_ESTIMATORS = 100  # int, default=100
 _C.RANDOM_FOREST.CRITERION = "gini"  # {"gini", "entropy"}, default="gini"
@@ -119,7 +133,7 @@ _C.RANDOM_FOREST.HYPER_PARAM_TUNING.MAX_SAMPLES = None
 # ---------------------------------------------------------------------------- #
 _C.LOGISTIC_REGRESSION = CN()
 _C.LOGISTIC_REGRESSION.NAME = 'LOGISTIC REGRESSION'
-_C.LOGISTIC_REGRESSION.MODE = TrainingMode.CLASSIFICATION  # 
+
 _C.LOGISTIC_REGRESSION.PENALTY = 'l2'  # {'l1', 'l2', 'elasticnet', 'none'}, default='l2'
 _C.LOGISTIC_REGRESSION.DUAL = False  # bool, default=False
 _C.LOGISTIC_REGRESSION.TOL = 1e-4  # float, default=1e-4
@@ -152,8 +166,7 @@ _C.LOGISTIC_REGRESSION.HYPER_PARAM_TUNING.L1_RATIO = None
 
 # ---------------------------------------------------------------------------- #
 _C.DECISION_TREE = CN()
-_C.DECISION_TREE.NAME = 'RANDOM_FOREST'
-_C.DECISION_TREE.MODE = TrainingMode.CLASSIFICATION
+_C.DECISION_TREE.NAME = 'DECISION TREE'
 
 _C.DECISION_TREE.CRITERION = "gini"  # criterion : {"gini", "entropy"}, default="gini"
 _C.DECISION_TREE.SPLITTER = "best"  # splitter : {"best", "random"}, default="best"
@@ -170,29 +183,38 @@ _C.DECISION_TREE.CLASS_WEIGHT = None  # class_weight : dict, list of dict or "ba
 _C.DECISION_TREE.PRESORT = 'deprecated'  # presort : deprecated, default='deprecated'
 _C.DECISION_TREE.CCP_ALPHA = 0.0  # ccp_alpha : non-negative float, default=0.0
 
-_C.DECISION_TREE.FINE_TUNE = CN()
-_C.DECISION_TREE.FINE_TUNE.CRITERION = ("gini", "entropy")
-_C.DECISION_TREE.FINE_TUNE.SPLITTER = None
-_C.DECISION_TREE.FINE_TUNE.MAX_DEPTH = None
-_C.DECISION_TREE.FINE_TUNE.MIN_SAMPLES_SPLIT = None
-_C.DECISION_TREE.FINE_TUNE.MIN_SAMPLES_LEAF = None
-_C.DECISION_TREE.FINE_TUNE.MIN_WEIGHT_FRACTION_LEAF = None
-_C.DECISION_TREE.FINE_TUNE.MAX_FEATURES = None
-_C.DECISION_TREE.FINE_TUNE.MAX_LEAF_NODES = None
-_C.DECISION_TREE.FINE_TUNE.MIN_IMPURITY_DECREASE = None
-_C.DECISION_TREE.FINE_TUNE.MIN_IMPURITY_SPLIT = None
-_C.DECISION_TREE.FINE_TUNE.CLASS_WEIGHT = None
-_C.DECISION_TREE.FINE_TUNE.PRESORT = None
-_C.DECISION_TREE.FINE_TUNE.CCP_ALPHA = None
+_C.DECISION_TREE.HYPER_PARAM_TUNING = CN()
+_C.DECISION_TREE.HYPER_PARAM_TUNING.CRITERION = ("gini", "entropy")
+_C.DECISION_TREE.HYPER_PARAM_TUNING.SPLITTER = None
+_C.DECISION_TREE.HYPER_PARAM_TUNING.MAX_DEPTH = None
+_C.DECISION_TREE.HYPER_PARAM_TUNING.MIN_SAMPLES_SPLIT = None
+_C.DECISION_TREE.HYPER_PARAM_TUNING.MIN_SAMPLES_LEAF = None
+_C.DECISION_TREE.HYPER_PARAM_TUNING.MIN_WEIGHT_FRACTION_LEAF = None
+_C.DECISION_TREE.HYPER_PARAM_TUNING.MAX_FEATURES = None
+_C.DECISION_TREE.HYPER_PARAM_TUNING.MAX_LEAF_NODES = None
+_C.DECISION_TREE.HYPER_PARAM_TUNING.MIN_IMPURITY_DECREASE = None
+_C.DECISION_TREE.HYPER_PARAM_TUNING.MIN_IMPURITY_SPLIT = None
+_C.DECISION_TREE.HYPER_PARAM_TUNING.CLASS_WEIGHT = None
+_C.DECISION_TREE.HYPER_PARAM_TUNING.PRESORT = None
+_C.DECISION_TREE.HYPER_PARAM_TUNING.CCP_ALPHA = None
 # ---------------------------------------------------------------------------- #
 # ---------------------------------------------------------------------------- #
 # metric
 # ---------------------------------------------------------------------------- #
-_C.METRIC = CN()
+_C.EVALUATION = CN()
 
-_C.METRIC = MetricTypes.F1_SCORE_MACRO
-_C.CONFUSION_MATRIX = True
-
+_C.EVALUATION.METRIC = MetricTypes.F1_SCORE_MACRO
+_C.EVALUATION.CONFUSION_MATRIX = True
+"""
+'accuracy', 'balanced_accuracy',  'top_k_accuracy',
+ 'average_precision',  'neg_brier_score', 'f1',
+ 'f1_micro', 'f1_macro',  'f1_weighted',
+ 'f1_samples',  'neg_log_loss', 'precision',
+  'recall',  'jaccard', 'roc_auc',
+ 'roc_auc_ovr', 'roc_auc_ovo',  'roc_auc_ovr_weighted',
+ 'roc_auc_ovo_weighted'
+"""
+_C.EVALUATION.CROSS_VAL_METRICS = 'f1_weighted'
 # -----------------------------------------------------------------------------
 # CATEGORICAL FEATURES ENCODER CONFIG / _C.ENCODER.{COLUMN NAME} = TYPE OF ENCODER
 # -----------------------------------------------------------------------------

@@ -1,11 +1,14 @@
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 
-from model.based import BasedModel, TrainingMode
+from model.based import BasedModel, TaskMode
 
 
 class DecisionTree(BasedModel):
     def __init__(self, cfg):
         super(DecisionTree, self).__init__(cfg=cfg)
+        self.use_for_feature_importance = True
+        self._task_mode = cfg.BASIC.TASK_MODE
+
         self._params = {
             'criterion': cfg.DECISION_TREE.CRITERION,
             'splitter': cfg.DECISION_TREE.SPLITTER,
@@ -23,10 +26,9 @@ class DecisionTree(BasedModel):
             'ccp_alpha': cfg.DECISION_TREE.CCP_ALPHA,
         }
 
-        self._training_mode = cfg.DECISION_TREE.MODE
-        if self._training_mode == TrainingMode.CLASSIFICATION:
+        if self._task_mode == TaskMode.CLASSIFICATION:
             self.model = DecisionTreeClassifier(**self._params)
-        elif self._training_mode == TrainingMode.REGRESSION:
+        elif self._task_mode == TaskMode.REGRESSION:
             self.model = DecisionTreeRegressor(**self._params)
 
         self.name = cfg.DECISION_TREE.NAME

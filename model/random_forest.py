@@ -1,11 +1,14 @@
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 
-from model.based import BasedModel, TrainingMode
+from model.based import BasedModel, TaskMode
 
 
 class RandomForest(BasedModel):
     def __init__(self, cfg):
         super(RandomForest, self).__init__(cfg=cfg)
+
+        self.use_for_feature_importance = True
+        self._task_mode = cfg.BASIC.TASK_MODE
         self._params = {
 
             'n_estimators': cfg.RANDOM_FOREST.N_ESTIMATORS,
@@ -31,11 +34,11 @@ class RandomForest(BasedModel):
             'max_samples': cfg.RANDOM_FOREST.MAX_SAMPLES,
 
         }
+        self.name = cfg.RANDOM_FOREST.NAME
 
-        self._training_mode = cfg.RANDOM_FOREST.MODE
-        if self._training_mode == TrainingMode.CLASSIFICATION:
+        if self._task_mode == TaskMode.CLASSIFICATION:
             self.model = RandomForestClassifier(**self._params)
-        elif self._training_mode == TrainingMode.REGRESSION:
+        elif self._task_mode == TaskMode.REGRESSION:
             self.model = RandomForestRegressor(**self._params)
 
         for _k in cfg.RANDOM_FOREST.HYPER_PARAM_TUNING:

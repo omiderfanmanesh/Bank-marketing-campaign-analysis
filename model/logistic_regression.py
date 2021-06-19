@@ -1,11 +1,15 @@
 from sklearn.linear_model import LogisticRegression as lg
 
-from model.based import BasedModel, TrainingMode
+from model.based import BasedModel, TaskMode
 
 
 class LogisticRegression(BasedModel):
     def __init__(self, cfg):
         super(LogisticRegression, self).__init__(cfg=cfg)
+
+        self.use_for_feature_importance = True
+        self._task_mode = cfg.BASIC.TASK_MODE
+
         self._params = {
 
             'penalty': cfg.LOGISTIC_REGRESSION.PENALTY,
@@ -28,13 +32,14 @@ class LogisticRegression(BasedModel):
         }
         self.name = cfg.LOGISTIC_REGRESSION.NAME
 
-        self._training_mode = cfg.LOGISTIC_REGRESSION.MODE
-        if self._training_mode == TrainingMode.CLASSIFICATION:
+        if self._task_mode == TaskMode.CLASSIFICATION:
             self.model = lg(**self._params)
 
-        for _k in cfg.LOGISTIC_REGRESSION.HYPER_PARAM_TUNING:
-            _param = cfg.LOGISTIC_REGRESSION.HYPER_PARAM_TUNING[_k]
+            for _k in cfg.LOGISTIC_REGRESSION.HYPER_PARAM_TUNING:
+                _param = cfg.LOGISTIC_REGRESSION.HYPER_PARAM_TUNING[_k]
 
-            if _param is not None:
-                _param = [*_param]
-                self.fine_tune_params[_k.lower()] = [*_param]
+                if _param is not None:
+                    _param = [*_param]
+                    self.fine_tune_params[_k.lower()] = [*_param]
+        else:
+            print(f"this model can not be used for regression task")

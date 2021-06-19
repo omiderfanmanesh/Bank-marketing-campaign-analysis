@@ -18,6 +18,23 @@ class BasedPlot:
         self._dataset = dataset
         self._df = dataset.df
 
+    def category_count(self, col, lbl_rotation=None):
+
+        sns.catplot(x=col, hue=self.target, kind="count", data=self.df)
+        fig = plt.gcf()
+        fig.set_size_inches(8, 10)
+        if lbl_rotation is not None:
+            plt.xticks(rotation=lbl_rotation)
+        plt.show()
+
+    def bar(self, x, y):
+        sns.barplot(x=x, y=y, hue=self.target, data=self.df)
+        plt.show()
+
+    def strip(self, x, y):
+        sns.stripplot(x=x, y=y, hue=self.target, data=self.df)
+        plt.show()
+
     def kernel_density_estimation(self, x, y):
         g = sns.kdeplot(
             data=self.df,
@@ -56,10 +73,15 @@ class BasedPlot:
         sns.pairplot(data=self.df, hue=self.target, corner=True)
         plt.show()
 
-    def __scatter(self, df, features, trans=None):
-        g = sns.PairGrid(df, vars=features, hue=self.target, corner=True)
-        g.map_diag(sns.histplot)
-        g.map_offdiag(sns.scatterplot)
+    def __scatter(self, df, first=None, second=None, features=None, by=None, trans=None):
+        if first is None and second is None and features is not None:
+            g = sns.PairGrid(df, vars=features, hue=self.target, corner=True)
+            g.map_diag(sns.histplot)
+            g.map_offdiag(sns.scatterplot)
+        else:
+            if by is None:
+                by = self.target
+            sns.scatterplot(data=df, x=df[first], y=df[second], hue=by)
         plt.show()
 
     def __feature_distribution(self, df, col, is_numerical=True, trans=None):
@@ -84,6 +106,10 @@ class BasedPlot:
     def numerical_features_scatter(self, trans=None):
         features = self.dataset.numerical_features()
         self.__scatter(self.df.copy(), features=features, trans=trans)
+
+    def scatter(self, first, second, by, trans=None):
+        if is_numeric_dtype(self.df[first]) and is_numeric_dtype(self.df[second]):
+            self.__scatter(self.df.copy(), first=first, second=second, by=by, trans=trans)
 
     def numerical_features_box(self, trans=None):
         features = self.dataset.numerical_features()

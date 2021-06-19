@@ -1,7 +1,10 @@
 from pprint import pprint
 from time import time
 
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+import seaborn as sns
 # Metrics
 from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score
 from sklearn.model_selection import GridSearchCV
@@ -15,8 +18,11 @@ from .tuning_mode import TuningMode
 class BasedModel:
     def __init__(self, cfg):
         self.model = None
-        self._metric_function = cfg.METRIC
+        self._metric_function = cfg.EVALUATION.METRIC
+        self._cross_val_metrics = cfg.EVALUATION.CROSS_VAL_METRICS
+        self._fold = cfg.MODEL.K_FOLD
         self.name = None
+        self.use_for_feature_importance = False
         self.fine_tune_params = {}
 
     def train(self, X_train, y_train):
@@ -50,12 +56,13 @@ class BasedModel:
         elif metric_type == MetricTypes.ACCURACY:
             return accuracy_score(y_true, y_pred)
 
-    def hyper_parameter_tuning(self, X, y, title=None, method=TuningMode.GRID_SEARCH):
+    def hyper_parameter_tuning(self, X, y, title='', method=TuningMode.GRID_SEARCH):
         opt = None
         callbacks = None
         if self.fine_tune_params:
             if method == TuningMode.GRID_SEARCH:
-                opt = GridSearchCV(estimator=self.model, param_grid=self.fine_tune_params, cv=5, scoring='accuracy')
+                opt = GridSearchCV(estimator=self.model, param_grid=self.fine_tune_params, cv=self._fold,
+                                   scoring=self._cross_val_metrics)
             elif method == TuningMode.BAYES_SEARCH:
                 opt = BayesSearchCV(self.model, self.fine_tune_params)
                 callbacks = [VerboseCallback(100), DeadlineStopper(60 * 10)]
@@ -66,7 +73,31 @@ class BasedModel:
         else:
             print('There are no params for tuning')
 
-    def report_best_params(self, optimizer, X, y, title='', callbacks=None):
+    def feature_importance(self, features=None):
+        if self.use_for_feature_importance:
+            if hasattr(self.model, 'coef_'):
+                importance = self.model.coef_[0]
+            else:
+                importance = self.model.feature_importances_
+            importance = np.array(importance).reshape((-1, 1))
+            print(importance.shape)
+            # summarize feature importance
+            for i, v in enumerate(importance):
+                if features:
+                    print('Feature(%0d): %0s, Score: %.5f' % (i, str(features[i]), v))
+                else:
+                    print('Feature(%0s): Score: %.5f' % (str(i), v))
+
+            fs = pd.DataFrame(data=importance.T, columns=features)
+            ax = sns.barplot(data=fs)
+            plt.gcf().set_size_inches(11, 9)
+            plt.xticks(rotation=90)
+            plt.title(f'Feature importance by using the model of {self.name}')
+            plt.show()
+        else:
+            print(f" The model of {self.name} can not be used for estimating the importance of features")
+
+    def report_best_params(self, optimizer, X, y, title, callbacks=None):
         """
         A wrapper for measuring time and performances of different optimizers
 

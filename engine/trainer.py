@@ -11,7 +11,8 @@ from model.based.tuning_mode import TuningMode
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
-def do_train(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, scaler: Scalers, pca: PCA):
+def do_train(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, scaler: Scalers, pca: PCA,
+             feature_importance=False):
     if pca is None:
         dataset.df[dataset.target_col] = encoder.custom_encoding(dataset.df, col=cfg.DATASET.TARGET,
                                                                  encode_type=cfg.ENCODER.Y)
@@ -41,10 +42,14 @@ def do_train(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, s
     model.train(X_train=X_train, y_train=y_train)
     model.evaluate(X_test=X_test, y_test=y_test)
 
+    if feature_importance:
+        model.feature_importance(features=None)
+
 
 def do_cross_val(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, scaler: Scalers, pca: PCA):
-    _X, _y = encoder.do_encode(data=dataset.df, y=dataset.targets.values)
-
+    _X = encoder.do_encode(data=dataset.df, y=dataset.targets.values)
+    _y = encoder.custom_encoding(dataset.df, col=cfg.DATASET.TARGET,
+                                 encode_type=cfg.ENCODER.Y)
     _data = dataset.select_columns(data=dataset.df)
 
     cv = KFold(n_splits=10, random_state=1, shuffle=True)
