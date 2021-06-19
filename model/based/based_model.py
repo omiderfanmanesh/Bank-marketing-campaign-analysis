@@ -7,6 +7,7 @@ import pandas as pd
 import seaborn as sns
 # Metrics
 from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score
+from sklearn.metrics import plot_confusion_matrix
 from sklearn.model_selection import GridSearchCV
 from skopt import BayesSearchCV
 from skopt.callbacks import DeadlineStopper, VerboseCallback
@@ -19,42 +20,66 @@ class BasedModel:
     def __init__(self, cfg):
         self.model = None
         self._metric_function = cfg.EVALUATION.METRIC
-        self._cross_val_metrics = cfg.EVALUATION.CROSS_VAL_METRICS
         self._fold = cfg.MODEL.K_FOLD
         self.name = None
         self.use_for_feature_importance = False
         self.fine_tune_params = {}
+        self._confusion_matrix = cfg.EVALUATION.CONFUSION_MATRIX
 
     def train(self, X_train, y_train):
         print('start training...')
         self.model.fit(X_train, y_train)
         return self.model
 
-    def evaluate(self, X_test, y_test):
+    def evaluate(self, X_test, y_test, target_labels=None, normalize=None):
         print('evaluation...')
-        y_p = self.model.predict(X_test)
-        score = self.metric(y_test, y_p)
+        y_pred = self.model.predict(X_test)
+        score = self.metric(y_test, y_pred)
         print(f'score is {score}')
-        return
 
-    def metric(self, y_true, y_pred):
+        if self._confusion_matrix:
+            plot_confusion_matrix(self.model, X_test, y_test, cmap=plt.cm.Blues,
+                                  display_labels=target_labels,
+                                  normalize=normalize)
+            plt.show()
+
+    def metric(self, y_true=None, y_pred=None):
         metric_type = self._metric_function
-        if metric_type == MetricTypes.F1_SCORE_BINARY:
-            return f1_score(y_true, y_pred, average="binary")
-        elif metric_type == MetricTypes.F1_SCORE_MACRO:
-            return f1_score(y_true, y_pred, average="micro")
-        elif metric_type == MetricTypes.F1_SCORE_MACRO:
-            return f1_score(y_true, y_pred, average="macro")
-        elif metric_type == MetricTypes.F1_SCORE_WEIGHTED:
-            return f1_score(y_true, y_pred, average="weighted")
-        elif metric_type == MetricTypes.F1_SCORE_SAMPLE:
-            return f1_score(y_true, y_pred, average="sample")
-        elif metric_type == MetricTypes.PRECISION:
-            return precision_score(y_true, y_pred)
-        elif metric_type == MetricTypes.RECALL:
-            return recall_score(y_true, y_pred)
-        elif metric_type == MetricTypes.ACCURACY:
-            return accuracy_score(y_true, y_pred)
+
+        if y_pred is None and y_true is None:
+            if metric_type == MetricTypes.F1_SCORE_BINARY:
+                return 'f1'
+            elif metric_type == MetricTypes.F1_SCORE_MACRO:
+                return 'f1_micro'
+            elif metric_type == MetricTypes.F1_SCORE_MACRO:
+                return 'f1_macro'
+            elif metric_type == MetricTypes.F1_SCORE_WEIGHTED:
+                return 'f1_weighted'
+            elif metric_type == MetricTypes.F1_SCORE_SAMPLE:
+                return 'f1_samples'
+            elif metric_type == MetricTypes.PRECISION:
+                return 'precision'
+            elif metric_type == MetricTypes.RECALL:
+                return 'recall'
+            elif metric_type == MetricTypes.ACCURACY:
+                return 'accuracy'
+        else:
+            if metric_type == MetricTypes.F1_SCORE_BINARY:
+                return f1_score(y_true, y_pred, average="binary")
+            elif metric_type == MetricTypes.F1_SCORE_MACRO:
+                return f1_score(y_true, y_pred, average="micro")
+            elif metric_type == MetricTypes.F1_SCORE_MACRO:
+                return f1_score(y_true, y_pred, average="macro")
+            elif metric_type == MetricTypes.F1_SCORE_WEIGHTED:
+                return f1_score(y_true, y_pred, average="weighted")
+            elif metric_type == MetricTypes.F1_SCORE_SAMPLE:
+                return f1_score(y_true, y_pred, average="sample")
+            elif metric_type == MetricTypes.PRECISION:
+                return precision_score(y_true, y_pred)
+            elif metric_type == MetricTypes.RECALL:
+                return recall_score(y_true, y_pred)
+            elif metric_type == MetricTypes.ACCURACY:
+                return accuracy_score(y_true, y_pred)
 
     def hyper_parameter_tuning(self, X, y, title='', method=TuningMode.GRID_SEARCH):
         opt = None
