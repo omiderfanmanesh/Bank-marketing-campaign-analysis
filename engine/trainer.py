@@ -40,23 +40,24 @@ def do_train(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, s
         X_train, X_test, y_train, y_test = dataset.split_to(use_pca=True)
 
     model.train(X_train=X_train, y_train=y_train)
-    model.evaluate(X_test=X_test, y_test=y_test)
+    class_names = dataset.df_main[dataset.target_col].unique()
+    model.evaluate(X_test=X_test, y_test=y_test, target_labels=class_names)
 
     if feature_importance:
         model.feature_importance(features=None)
 
 
 def do_cross_val(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, scaler: Scalers, pca: PCA):
-    _X = encoder.do_encode(data=dataset.df, y=dataset.targets.values)
     _y = encoder.custom_encoding(dataset.df, col=cfg.DATASET.TARGET,
                                  encode_type=cfg.ENCODER.Y)
-    _data = dataset.select_columns(data=dataset.df)
 
-    cv = KFold(n_splits=10, random_state=1, shuffle=True)
+    _X = encoder.do_encode(data=dataset.df.drop(dataset.target_col, axis=1), y=_y)
 
-    scores = cross_val_score(model.model, _X.values, _y, scoring='accuracy', cv=cv, n_jobs=-1)
+    cv = KFold(n_splits=cfg.MODEL.K_FOLD, random_state=1, shuffle=True)
+    metric = model.metric()
+    scores = cross_val_score(model.model, _X.values, _y, scoring=metric, cv=cv, n_jobs=-1)
     for s in scores:
-        print('{} is {}'.format(cfg.METRIC, s))
+        print('{} is {}'.format(metric, s))
 
 
 def do_fine_tune(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, scaler: Scalers,

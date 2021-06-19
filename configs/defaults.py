@@ -19,7 +19,7 @@ _C.BASIC.SEED = 2021
 _C.BASIC.PCA = False
 _C.BASIC.RAND_STATE = 2021
 _C.BASIC.MODEL = Model.SVM
-_C.BASIC.RUNTIME_MODE = RuntimeMode.FEATURE_IMPORTANCE
+_C.BASIC.RUNTIME_MODE = RuntimeMode.TRAIN
 _C.BASIC.TASK_MODE = TaskMode.CLASSIFICATION
 # -----------------------------------------------------------------------------
 # MODEL CONFIG
@@ -214,7 +214,6 @@ _C.EVALUATION.CONFUSION_MATRIX = True
  'roc_auc_ovr', 'roc_auc_ovo',  'roc_auc_ovr_weighted',
  'roc_auc_ovo_weighted'
 """
-_C.EVALUATION.CROSS_VAL_METRICS = 'f1_weighted'
 # -----------------------------------------------------------------------------
 # CATEGORICAL FEATURES ENCODER CONFIG / _C.ENCODER.{COLUMN NAME} = TYPE OF ENCODER
 # -----------------------------------------------------------------------------
