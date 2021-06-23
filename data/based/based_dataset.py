@@ -5,11 +5,16 @@ import random
 
 import numpy as np
 import pandas as pd
+from imblearn.over_sampling import RandomOverSampler
+from imblearn.over_sampling import SMOTE, SMOTENC, SVMSMOTE
+from imblearn.pipeline import Pipeline
+from imblearn.under_sampling import RandomUnderSampler
 from pandas import DataFrame
 from scipy import stats
 from sklearn.model_selection import train_test_split
 
 from data.based.file_types import FileTypes
+from data.based.sampling_types import Sampling
 from data.based.transformers_enums import TransformersType
 
 seed = 2021
@@ -79,7 +84,9 @@ class BasedDataset:
         return data[cols]
 
     def split_to(self, test_size=0.10, val_size=0.10, has_validation=False, use_pca=False, random_state=seed):
+
         _X, _y = self.__samples_and_labels(use_pca=use_pca)
+
         _X_train, _X_test, _y_train, _y_test = train_test_split(_X, _y, test_size=test_size, random_state=random_state)
         if has_validation:
             _X_train, X_val, _y_train, y_val = train_test_split(_X_train, _y_train, test_size=val_size,
@@ -104,6 +111,71 @@ class BasedDataset:
         _y = self.df[self.target_col].copy()
 
         return _X, _y
+
+    def resampling(self, X, y):
+        sampling_types = [*self._cfg.BASIC.SAMPLING_STRATEGY]
+        steps = []
+        for smp in sampling_types:
+            step = self.__resampling_pipeline(sampling_type=smp)
+            steps.append(step)
+        pipeline = Pipeline(steps=steps)
+        X, y = pipeline.fit_resample(X, y)
+        return X, y
+
+    def __resampling_pipeline(self, sampling_type):
+
+        steps = None
+
+        if sampling_type == Sampling.RANDOM_UNDER_SAMPLING:
+
+            params = {
+                'sampling_strategy': self._cfg.RANDOM_UNDER_SAMPLER.SAMPLING_STRATEGY,
+                'random_state': self._cfg.RANDOM_UNDER_SAMPLER.RANDOM_STATE,
+                'replacement': self._cfg.RANDOM_UNDER_SAMPLER.REPLACEMENT
+            }
+            random_under_sampler = RandomUnderSampler(**params)
+            steps = ('random_under_sampler', random_under_sampler)
+        elif sampling_type == Sampling.RANDOM_OVER_SAMPLING:
+            params = {
+                'sampling_strategy': self._cfg.RANDOM_OVER_SAMPLER.SAMPLING_STRATEGY,
+                'random_state': self._cfg.RANDOM_OVER_SAMPLER.RANDOM_STATE,
+                # 'shrinkage': self._cfg.RANDOM_OVER_SAMPLER.SHRINKAGE
+            }
+            random_over_sampler = RandomOverSampler(**params)
+            steps = ('random_over_sampler', random_over_sampler)
+        elif sampling_type == Sampling.SMOTE:
+            params = {
+                'sampling_strategy': self._cfg.SMOTE.SAMPLING_STRATEGY,
+                'random_state': self._cfg.SMOTE.RANDOM_STATE,
+                'k_neighbors': self._cfg.SMOTE.K_NEIGHBORS,
+                'n_jobs': self._cfg.SMOTE.N_JOBS
+            }
+            smote = SMOTE(**params)
+            steps = ('smote', smote)
+        elif sampling_type == Sampling.SMOTENC:
+            params = {
+                'categorical_features': self._cfg.SMOTENC.CATEGORICAL_FEATURES,
+                'sampling_strategy': self._cfg.SMOTENC.SAMPLING_STRATEGY,
+                'random_state': self._cfg.SMOTENC.RANDOM_STATE,
+                'k_neighbors': self._cfg.SMOTENC.K_NEIGHBORS,
+                'n_jobs': self._cfg.SMOTENC.N_JOBS
+            }
+            smotenc = SMOTENC(**params)
+            steps = ('smotenc', smotenc)
+        elif sampling_type == Sampling.SVMSMOTE:
+            params = {
+                'sampling_strategy': self._cfg.SVMSMOTE.SAMPLING_STRATEGY,
+                'random_state': self._cfg.SVMSMOTE.RANDOM_STATE,
+                'k_neighbors': self._cfg.SVMSMOTE.K_NEIGHBORS,
+                'n_jobs': self._cfg.SVMSMOTE.N_JOBS,
+                'm_neighbors': self._cfg.SVMSMOTE.M_NEIGHBORS,
+                # 'svm_estimator': self._cfg.SMOTE.SVM_ESTIMATOR,
+                'out_step': self._cfg.SVMSMOTE.OUT_STEP
+            }
+            svmsmote = SVMSMOTE(**params)
+            steps = ('svmsmote', svmsmote)
+
+        return steps
 
     def __create_csv_dataframe(self):
         return pd.read_csv(self.dataset_address, delimiter=';')

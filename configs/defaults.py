@@ -1,6 +1,6 @@
 from yacs.config import CfgNode as CN
 
-from data.based import EncoderTypes, ScaleTypes
+from data.based import EncoderTypes, ScaleTypes, Sampling
 from model.based import MetricTypes, TaskMode
 from model.based import Model
 from utils import RuntimeMode
@@ -19,14 +19,51 @@ _C.BASIC.SEED = 2021
 _C.BASIC.PCA = False
 _C.BASIC.RAND_STATE = 2021
 _C.BASIC.MODEL = Model.SVM
-_C.BASIC.RUNTIME_MODE = RuntimeMode.TUNING
+_C.BASIC.RUNTIME_MODE = RuntimeMode.TRAIN
 _C.BASIC.TASK_MODE = TaskMode.CLASSIFICATION
+_C.BASIC.SAMPLING_STRATEGY = (Sampling.SMOTE, Sampling.RANDOM_UNDER_SAMPLING)  # None means don't use resampling
 # -----------------------------------------------------------------------------
 # MODEL CONFIG
 # -----------------------------------------------------------------------------
 _C.MODEL = CN()
 _C.MODEL.NUM_CLASSES = 2
 _C.MODEL.K_FOLD = 5
+
+# -----------------------------------------------------------------------------
+# SAMPLING
+# -----------------------------------------------------------------------------
+_C.RANDOM_UNDER_SAMPLER = CN()
+_C.RANDOM_UNDER_SAMPLER.SAMPLING_STRATEGY = 'auto'  # float, str, dict, callable, default=’auto’
+_C.RANDOM_UNDER_SAMPLER.RANDOM_STATE = 2021  # int, RandomState instance, default=None
+_C.RANDOM_UNDER_SAMPLER.REPLACEMENT = False  # bool, default=False
+
+_C.RANDOM_OVER_SAMPLER = CN()
+_C.RANDOM_OVER_SAMPLER.SAMPLING_STRATEGY = 'minority'  # float, str, dict or callable, default=’auto’
+_C.RANDOM_OVER_SAMPLER.RANDOM_STATE = 2021  # int, RandomState instance, default=None
+# _C.RANDOM_OVER_SAMPLER.SHRINKAGE = 0  # float or dict, default=None
+
+_C.SMOTE = CN()
+_C.SMOTE.SAMPLING_STRATEGY = 'auto'  # float, str, dict or callable, default=’auto’ {'minority'}
+_C.SMOTE.RANDOM_STATE = 2021  # int, RandomState instance, default=None
+_C.SMOTE.K_NEIGHBORS = 5  # int or object, default=5
+_C.SMOTE.N_JOBS = -1  # int, default=None
+
+_C.SMOTENC = CN()
+_C.SMOTENC.CATEGORICAL_FEATURES = ('job', 'marital', 'education', 'default', 'housing', 'loan', 'contact',
+                                   'month')  # ndarray of shape (n_cat_features,) or (n_features,)
+_C.SMOTENC.SAMPLING_STRATEGY = 'minority'  # float, str, dict or callable, default=’auto’
+_C.SMOTENC.RANDOM_STATE = 2021  # int, RandomState instance, default=None
+_C.SMOTENC.K_NEIGHBORS = 5  # int or object, default=5
+_C.SMOTENC.N_JOBS = -1  # int, default=None
+
+_C.SVMSMOTE = CN()
+_C.SVMSMOTE.SAMPLING_STRATEGY = 'auto'  # float, str, dict or callable, default=’auto’ {'minority'}
+_C.SVMSMOTE.RANDOM_STATE = 2021  # int, RandomState instance, default=None
+_C.SVMSMOTE.K_NEIGHBORS = 3  # int or object, default=5
+_C.SVMSMOTE.N_JOBS = -1  # int, default=None
+_C.SVMSMOTE.M_NEIGHBORS = 10  # int or object, default=10
+# _C.SVMSMOTE.SVM_ESTIMATOR = 5  # estimator object, default=SVC()
+_C.SVMSMOTE.OUT_STEP = 0.5  # float, default=0.5
 
 # -----------------------------------------------------------------------------
 # Dataset
@@ -37,6 +74,7 @@ _C.DATASET.DATASET_BRIEF_DESCRIPTION = '../data/dataset/description.txt'
 _C.DATASET.TARGET = 'y'
 _C.DATASET.HAS_CATEGORICAL_TARGETS = True
 # _C.DATASET.DROP_COLS = ('y')
+
 
 # ---------------------------------------------------------------------------- #
 # metric

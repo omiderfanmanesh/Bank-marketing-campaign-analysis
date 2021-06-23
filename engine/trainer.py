@@ -1,4 +1,5 @@
 import warnings
+from collections import Counter
 
 from sklearn.model_selection import KFold
 from sklearn.model_selection import cross_val_score
@@ -20,8 +21,17 @@ def do_train(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, s
         if encoder is not None:
             X_train, X_test = encoder.do_encode(X_train=X_train, X_test=X_test, y_train=y_train,
                                                 y_test=y_test)
+
         X_train = dataset.select_columns(data=X_train)
         X_test = dataset.select_columns(data=X_test)
+
+        if cfg.BASIC.SAMPLING_STRATEGY is not None:
+            counter = Counter(y_train)
+            print(f"Before sampling {counter}")
+            X_train, y_train = dataset.resampling(X=X_train, y=y_train)
+            counter = Counter(y_train)
+            print(f"After sampling {counter}")
+
         if scaler is not None:
             X_train, X_test = scaler.do_scale(X_train=X_train, X_test=X_test)
     else:
