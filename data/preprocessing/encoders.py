@@ -58,12 +58,11 @@ class Encoders:
         for col in tqdm(self._cfg.ENCODER):
             encode_type = self._cfg.ENCODER[col]
             col = col.lower()
-            if col == self._cfg.DATASET.TARGET:
+            if col == self._cfg.DATASET.TARGET or col not in X_train.columns:
                 continue
             enc, enc_name = self.__get_encoder(encoder_type=encode_type, col=col)
             if encode_type == EncoderTypes.LABEL:
                 if data is None and y is None:
-
                     train_val = X_train[col].values
                     test_val = X_test[col].values
 

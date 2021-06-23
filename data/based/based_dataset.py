@@ -50,6 +50,11 @@ class BasedDataset:
         else:
             raise ValueError('dataset should be CSV file')
 
+    def drop_cols(self):
+        if self._cfg.DATASET.DROP_COLS is not None:
+            cols = list(self._cfg.DATASET.DROP_COLS)
+            self.df = self.df.drop(labels=cols, axis=1)
+
     def transform(self, data, trans_type):
         _min = min(data)
         if _min <= 0:

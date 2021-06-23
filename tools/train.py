@@ -13,6 +13,8 @@ def main():
     bank.load_dataset()
     bank.age()
     bank.duration()
+    bank.drop_cols()
+
     model_selection = cfg.BASIC.MODEL
     if model_selection == Model.SVM:
         model = SVM(cfg=cfg)
