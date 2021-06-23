@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from dtreeviz.trees import dtreeviz  # remember to load the package
 # Metrics
 from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score
 from sklearn.metrics import plot_confusion_matrix
@@ -154,6 +155,14 @@ class BasedModel:
             print('There are no params provided')
 
         return best_params
+
+    def plot_tree(self, X, y, target_name, feature_names, class_names):
+        viz = dtreeviz(self.model, X, y,
+                       target_name=target_name,
+                       feature_names=feature_names,
+                       class_names=list(class_names))
+        viz.save("decision_tree.svg")
+        viz.view()
 
     @property
     def model(self):
