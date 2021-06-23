@@ -54,11 +54,15 @@ class Encoders:
         else:
             return data_enc
 
-    def __encode_by_configs(self, data, y, X_train=None, X_test=None, y_train=None, y_test=None):
+    def __encode_by_configs(self, data=None, y=None, X_train=None, X_test=None, y_train=None, y_test=None):
         for col in tqdm(self._cfg.ENCODER):
             encode_type = self._cfg.ENCODER[col]
             col = col.lower()
-            if col == self._cfg.DATASET.TARGET or col not in X_train.columns:
+            if col == self._cfg.DATASET.TARGET:
+                continue
+            if X_train is not None and col not in X_train.columns:
+                continue
+            if data is not None and col not in data.columns:
                 continue
             enc, enc_name = self.__get_encoder(encoder_type=encode_type, col=col)
             if encode_type == EncoderTypes.LABEL:

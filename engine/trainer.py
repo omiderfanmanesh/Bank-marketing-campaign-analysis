@@ -37,8 +37,8 @@ def do_train(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, s
             X_train, X_test = scaler.do_scale(X_train=X_train, X_test=X_test)
     else:
         if encoder is not None:
-            dataset[dataset.target_col] = encoder.custom_encoding(dataset.df, col=cfg.DATASET.TARGET,
-                                                                  encode_type=cfg.ENCODER.Y)
+            dataset.df[dataset.target_col] = encoder.custom_encoding(dataset.df, col=cfg.DATASET.TARGET,
+                                                                     encode_type=cfg.ENCODER.Y)
             _data = encoder.do_encode(data=dataset.df, y=dataset.targets.values)
         else:
             _data = dataset.select_columns(data=dataset.df)
@@ -46,8 +46,9 @@ def do_train(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, s
         if scaler is not None:
             _data = scaler.do_scale(data=_data)
 
-        pca_df = pca.do_pca(data=_data)
-        dataset.pca = pca_df
+        df_pca = pca.do_pca(data=_data)
+        pca.plot_pca(X=df_pca, y=dataset.df[dataset.target_col])
+        dataset.pca = df_pca
         X_train, X_test, y_train, y_test = dataset.split_to(use_pca=True)
 
 

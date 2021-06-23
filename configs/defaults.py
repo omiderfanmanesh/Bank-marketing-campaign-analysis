@@ -16,9 +16,9 @@ _C = CN()
 # -----------------------------------------------------------------------------
 _C.BASIC = CN()
 _C.BASIC.SEED = 2021
-_C.BASIC.PCA = False
+_C.BASIC.PCA = True
 _C.BASIC.RAND_STATE = 2021
-_C.BASIC.MODEL = Model.DECISION_TREE
+_C.BASIC.MODEL = Model.SVM
 _C.BASIC.RUNTIME_MODE = RuntimeMode.TRAIN
 _C.BASIC.TASK_MODE = TaskMode.CLASSIFICATION
 _C.BASIC.SAMPLING_STRATEGY = None
@@ -80,23 +80,27 @@ _C.DATASET.HAS_CATEGORICAL_TARGETS = True
 'housing','loan','contact','day','month','duration','campaign','pdays','previous','poutcome')
 """
 
+# columns
 _C.DATASET.DROP_COLS = (
+
     # 'duration',
-    # 'day',
-    'balance',
-    # 'month', # 0.88
-    'job',
-    # 'previous',
-    'campaign',
-    'education',
+    'pdays',
+    'previous',
     # 'poutcome',
-    # 'age', 0.90
-    # 'pdays', 0.90
+    'education',
+    # 'age',
     'marital',
+    # 'default',
+    'job',
+    'day',
+    'balance',
+
     'contact',
-    # 'housing',
+    'housing',
     'loan',
-    'default'
+    'campaign',
+    'month'
+
 )
 # ---------------------------------------------------------------------------- #
 # metric
@@ -118,15 +122,15 @@ _C.EVALUATION.CONFUSION_MATRIX = False
 # CATEGORICAL FEATURES ENCODER CONFIG / _C.ENCODER.{COLUMN NAME} = TYPE OF ENCODER
 # -----------------------------------------------------------------------------
 _C.ENCODER = CN()
-_C.ENCODER.JOB = EncoderTypes.LABEL
-_C.ENCODER.MARITAL = EncoderTypes.LABEL
-_C.ENCODER.EDUCATION = EncoderTypes.LABEL
-_C.ENCODER.DEFAULT = EncoderTypes.LABEL
-_C.ENCODER.HOUSING = EncoderTypes.LABEL
-_C.ENCODER.LOAN = EncoderTypes.LABEL
-_C.ENCODER.CONTACT = EncoderTypes.LABEL
-_C.ENCODER.MONTH = EncoderTypes.LABEL
-_C.ENCODER.POUTCOME = EncoderTypes.LABEL
+_C.ENCODER.JOB = EncoderTypes.BINARY
+_C.ENCODER.MARITAL = EncoderTypes.BINARY
+_C.ENCODER.EDUCATION = EncoderTypes.ORDINAL
+_C.ENCODER.DEFAULT = EncoderTypes.BINARY
+_C.ENCODER.HOUSING = EncoderTypes.BINARY
+_C.ENCODER.LOAN = EncoderTypes.BINARY
+_C.ENCODER.CONTACT = EncoderTypes.BINARY
+_C.ENCODER.MONTH = EncoderTypes.ORDINAL
+_C.ENCODER.POUTCOME = EncoderTypes.BINARY
 _C.ENCODER.Y = EncoderTypes.LABEL  # if your target is categorical
 # -----------------------------------------------------------------------------
 # SCALER /
@@ -138,7 +142,7 @@ _C.SCALER = ScaleTypes.STANDARD
 # DECOMPOSITION
 # -----------------------------------------------------------------------------
 _C.PCA = CN()
-_C.PCA.N_COMPONENTS = 0.8
+_C.PCA.N_COMPONENTS = 0.7
 
 # ---------------------------------------------------------------------------- #
 # Misc options
