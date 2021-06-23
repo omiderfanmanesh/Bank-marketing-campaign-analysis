@@ -47,7 +47,8 @@ def do_train(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, s
             _data = scaler.do_scale(data=_data)
 
         df_pca = pca.do_pca(data=_data)
-        pca.plot_pca(X=df_pca, y=dataset.df[dataset.target_col])
+        if cfg.PCA.PLOT:
+            pca.plot_pca(X=df_pca, y=dataset.df[dataset.target_col])
         dataset.pca = df_pca
         X_train, X_test, y_train, y_test = dataset.split_to(use_pca=True)
 
