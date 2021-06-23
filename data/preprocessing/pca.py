@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns;
+import seaborn as sns
 from sklearn.decomposition import PCA as skl_pca
 
 sns.set()
@@ -24,7 +24,7 @@ class PCA:
 
         return _pca_df
 
-    def plot_pca(self, X, y):
+    def plot(self, X, y):
         X['y'] = y
         sns.pairplot(X, hue="y", height=2.5)
         plt.show()

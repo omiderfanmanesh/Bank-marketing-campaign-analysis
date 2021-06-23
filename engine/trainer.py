@@ -48,10 +48,9 @@ def do_train(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, s
 
         df_pca = pca.do_pca(data=_data)
         if cfg.PCA.PLOT:
-            pca.plot_pca(X=df_pca, y=dataset.df[dataset.target_col])
+            pca.plot(X=df_pca, y=dataset.df[dataset.target_col])
         dataset.pca = df_pca
         X_train, X_test, y_train, y_test = dataset.split_to(use_pca=True)
-
 
     model.train(X_train=X_train, y_train=y_train)
     class_names = dataset.df_main[dataset.target_col].unique()
@@ -59,6 +58,8 @@ def do_train(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, s
 
     if feature_importance:
         model.feature_importance(features=list(labels))
+
+    # model.plot_tree(X=X_train,y=y_train,target_name='y',feature_names=X_train.columns,class_names=class_names)
 
 
 def do_cross_val(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, scaler: Scalers, pca: PCA):

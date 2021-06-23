@@ -18,7 +18,7 @@ _C.BASIC = CN()
 _C.BASIC.SEED = 2021
 _C.BASIC.PCA = True
 _C.BASIC.RAND_STATE = 2021
-_C.BASIC.MODEL = Model.RANDOM_FOREST
+_C.BASIC.MODEL = Model.DECISION_TREE
 _C.BASIC.RUNTIME_MODE = RuntimeMode.TRAIN
 _C.BASIC.TASK_MODE = TaskMode.CLASSIFICATION
 _C.BASIC.SAMPLING_STRATEGY = None
@@ -84,20 +84,20 @@ _C.DATASET.HAS_CATEGORICAL_TARGETS = True
 _C.DATASET.DROP_COLS = (
 
     # 'duration',
-    'balance',
     # 'day',
+    'balance',
     # 'month',
-    # 'job',
-    'pdays',
-    'campaign',
+    'job',
+    # 'previous',
+    # 'campaign',
+    'education',
     # 'poutcome',
-    # 'age',
-    # 'education',
+    'age',
+    # 'pdays',
     'marital',
-    'previous',
+    'contact',
     'housing',
-    # 'contact',
-    # 'loan',
+    'loan',
     'default'
 
 )
@@ -141,7 +141,7 @@ _C.SCALER = ScaleTypes.STANDARD
 # DECOMPOSITION
 # -----------------------------------------------------------------------------
 _C.PCA = CN()
-_C.PCA.N_COMPONENTS = 0.9
+_C.PCA.N_COMPONENTS = 0.7
 _C.PCA.PLOT = False
 
 # ---------------------------------------------------------------------------- #
