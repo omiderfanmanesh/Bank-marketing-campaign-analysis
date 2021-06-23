@@ -18,7 +18,7 @@ _C.BASIC = CN()
 _C.BASIC.SEED = 2021
 _C.BASIC.PCA = True
 _C.BASIC.RAND_STATE = 2021
-_C.BASIC.MODEL = Model.DECISION_TREE
+_C.BASIC.MODEL = Model.LOGISTIC_REGRESSION
 _C.BASIC.RUNTIME_MODE = RuntimeMode.TRAIN
 _C.BASIC.TASK_MODE = TaskMode.CLASSIFICATION
 _C.BASIC.SAMPLING_STRATEGY = None
@@ -84,21 +84,21 @@ _C.DATASET.HAS_CATEGORICAL_TARGETS = True
 _C.DATASET.DROP_COLS = (
 
     # 'duration',
-    # 'day',
+    'day',
     'balance',
-    # 'month',
+    'month',
     'job',
-    # 'previous',
-    # 'campaign',
+    'previous',
+    'campaign',
     'education',
     # 'poutcome',
     'age',
     # 'pdays',
-    'marital',
-    'contact',
+    # 'marital',
+    # 'contact',
     'housing',
-    'loan',
-    'default'
+    # 'loan',
+    # 'default'
 
 )
 # ---------------------------------------------------------------------------- #
