@@ -1,6 +1,6 @@
 from yacs.config import CfgNode as CN
 
-from data.based import EncoderTypes, ScaleTypes, Sampling
+from data.based import EncoderTypes, ScaleTypes
 from model.based import MetricTypes, TaskMode
 from model.based import Model
 from utils import RuntimeMode
@@ -18,10 +18,11 @@ _C.BASIC = CN()
 _C.BASIC.SEED = 2021
 _C.BASIC.PCA = False
 _C.BASIC.RAND_STATE = 2021
-_C.BASIC.MODEL = Model.SVM
+_C.BASIC.MODEL = Model.DECISION_TREE
 _C.BASIC.RUNTIME_MODE = RuntimeMode.TRAIN
 _C.BASIC.TASK_MODE = TaskMode.CLASSIFICATION
-_C.BASIC.SAMPLING_STRATEGY = (Sampling.SMOTE, Sampling.RANDOM_UNDER_SAMPLING)  # None means don't use resampling
+_C.BASIC.SAMPLING_STRATEGY = None
+# _C.BASIC.SAMPLING_STRATEGY = (Sampling.SMOTE, Sampling.RANDOM_UNDER_SAMPLING)  # None means don't use resampling
 # -----------------------------------------------------------------------------
 # MODEL CONFIG
 # -----------------------------------------------------------------------------
@@ -73,16 +74,37 @@ _C.DATASET.DATASET_ADDRESS = '../data/dataset/bank.csv'
 _C.DATASET.DATASET_BRIEF_DESCRIPTION = '../data/dataset/description.txt'
 _C.DATASET.TARGET = 'y'
 _C.DATASET.HAS_CATEGORICAL_TARGETS = True
-# _C.DATASET.DROP_COLS = ('y')
 
+"""
+('age','job','marital','education','default','balance',
+'housing','loan','contact','day','month','duration','campaign','pdays','previous','poutcome')
+"""
 
+_C.DATASET.DROP_COLS = (
+    # 'duration',
+    # 'day',
+    'balance',
+    # 'month', # 0.88
+    'job',
+    # 'previous',
+    'campaign',
+    'education',
+    # 'poutcome',
+    # 'age', 0.90
+    # 'pdays', 0.90
+    'marital',
+    'contact',
+    # 'housing',
+    'loan',
+    'default'
+)
 # ---------------------------------------------------------------------------- #
 # metric
 # ---------------------------------------------------------------------------- #
 _C.EVALUATION = CN()
 
 _C.EVALUATION.METRIC = MetricTypes.F1_SCORE_MICRO
-_C.EVALUATION.CONFUSION_MATRIX = True
+_C.EVALUATION.CONFUSION_MATRIX = False
 """
 'accuracy', 'balanced_accuracy',  'top_k_accuracy',
  'average_precision',  'neg_brier_score', 'f1',

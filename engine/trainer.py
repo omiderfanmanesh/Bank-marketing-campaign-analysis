@@ -32,6 +32,7 @@ def do_train(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, s
             counter = Counter(y_train)
             print(f"After sampling {counter}")
 
+        labels = X_train.columns
         if scaler is not None:
             X_train, X_test = scaler.do_scale(X_train=X_train, X_test=X_test)
     else:
@@ -49,12 +50,13 @@ def do_train(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, s
         dataset.pca = pca_df
         X_train, X_test, y_train, y_test = dataset.split_to(use_pca=True)
 
+
     model.train(X_train=X_train, y_train=y_train)
     class_names = dataset.df_main[dataset.target_col].unique()
     model.evaluate(X_test=X_test, y_test=y_test, target_labels=class_names)
 
     if feature_importance:
-        model.feature_importance(features=None)
+        model.feature_importance(features=list(labels))
 
 
 def do_cross_val(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, scaler: Scalers, pca: PCA):

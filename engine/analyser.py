@@ -5,7 +5,7 @@ from eda.based.based_plots import BasedPlot
 
 
 def do_analysis(dataset: BasedDataset, plots: BasedPlot, analyzer: BasedAnalyzer, encoder: Encoders, scaler: Scalers):
-    # analyzer.description()
+    analyzer.description()
 
     # plots.rel(x='balance', y='age')
     # plots.duration()

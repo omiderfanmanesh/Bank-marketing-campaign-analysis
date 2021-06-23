@@ -105,7 +105,7 @@ class BasedModel:
             else:
                 importance = self.model.feature_importances_
             importance = np.array(importance).reshape((-1, 1))
-            print(importance.shape)
+
             # summarize feature importance
             for i, v in enumerate(importance):
                 if features:
