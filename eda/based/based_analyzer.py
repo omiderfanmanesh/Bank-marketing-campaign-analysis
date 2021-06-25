@@ -62,14 +62,14 @@ class BasedAnalyzer:
 
         print('calculate skewness and kurtosis of numerical features')
         print(self.skew_kurt(col=col))
-        print(
-            '\n* skewness is a measure of the asymmetry of the probability distribution of a real-valued random variable '
-            'about its mean. \nnegative skew commonly indicates that the tail is on the left side of the distribution, '
-            'and positive skew indicates that the tail is on the right.\n ')
-        print('* kurtosis is a measure of the "tailedness" of the probability distribution of a real-valued random '
-              'variable. Like skewness,\n kurtosis describes the shape of a probability distribution and there are '
-              'different ways of quantifying it for a theoretical distribution \nand corresponding ways of estimating '
-              'it from a sample from a population.')
+        # print(
+        #     '\n* skewness is a measure of the asymmetry of the probability distribution of a real-valued random variable '
+        #     'about its mean. \nnegative skew commonly indicates that the tail is on the left side of the distribution, '
+        #     'and positive skew indicates that the tail is on the right.\n ')
+        # print('* kurtosis is a measure of the "tailedness" of the probability distribution of a real-valued random '
+        #       'variable. Like skewness,\n kurtosis describes the shape of a probability distribution and there are '
+        #       'different ways of quantifying it for a theoretical distribution \nand corresponding ways of estimating '
+        #       'it from a sample from a population.')
         print('\n')
 
         if col is None:
@@ -85,7 +85,7 @@ class BasedAnalyzer:
             print(self.count_by(col=self.target_col))
             print('\n')
         else:
-            print("----------------- Top 10 values in column of {} -----------------".format(col))
+            print("----------------- Top 15 values in column of {} -----------------".format(col))
             print(self.count_by(col=col).head(15))
             print('\n')
 
