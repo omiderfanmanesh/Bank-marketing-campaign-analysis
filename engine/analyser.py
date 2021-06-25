@@ -11,8 +11,8 @@ def do_analysis(dataset: BasedDataset, plots: BasedPlot, analyzer: BasedAnalyzer
     # plots.duration()
     # dataset.duration()
     # analyzer.duration()
-    analyzer.y()
-    plots.y()
+    analyzer.loan()
+    plots.loan()
     # analyzer.description()
     # _data = encoder.do_encode(data=dataset.df, y=dataset.targets.values)
     # dataset.encoded_data = _data

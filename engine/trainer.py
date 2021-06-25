@@ -78,7 +78,8 @@ def do_cross_val(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoder
 def do_fine_tune(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, scaler: Scalers,
                  method=TuningMode.GRID_SEARCH):
     _X_train, _X_val, _X_test, _y_train, _y_val, _y_test = dataset.split_to(has_validation=True)
-    _X_train, X_test = encoder.do_encode(X_train=_X_train, X_test=_X_val, y_train=_y_train,
+
+    _X_train, _X_val = encoder.do_encode(X_train=_X_train, X_test=_X_val, y_train=_y_train,
                                          y_test=_y_val)
 
     _X_train = dataset.select_columns(data=_X_train)
