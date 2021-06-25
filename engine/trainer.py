@@ -1,3 +1,6 @@
+#  Copyright (c) 2021, Omid Erfanmanesh, All rights reserved.
+
+
 import warnings
 from collections import Counter
 

@@ -1,3 +1,5 @@
+#  Copyright (c) 2021, Omid Erfanmanesh, All rights reserved.
+
 class EncoderTypes:
     CUSTOM = 0
     LABEL = 1
