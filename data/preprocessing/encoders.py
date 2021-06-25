@@ -1,3 +1,5 @@
+#  Copyright (c) 2021, Omid Erfanmanesh, All rights reserved.
+
 from category_encoders import OneHotEncoder, OrdinalEncoder, BinaryEncoder
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm

@@ -1,3 +1,5 @@
+#  Copyright (c) 2021, Omid Erfanmanesh, All rights reserved.
+
 from pprint import pprint
 from time import time
 

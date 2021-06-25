@@ -1,3 +1,5 @@
+#  Copyright (c) 2021, Omid Erfanmanesh, All rights reserved.
+
 from yacs.config import CfgNode as CN
 
 from data.based import EncoderTypes, ScaleTypes
@@ -16,19 +18,19 @@ _C = CN()
 # -----------------------------------------------------------------------------
 _C.BASIC = CN()
 _C.BASIC.SEED = 2021
-_C.BASIC.PCA = True
+_C.BASIC.PCA = False  # pca = True will apply principal component analysis to data
 _C.BASIC.RAND_STATE = 2021
-_C.BASIC.MODEL = Model.SVM
-_C.BASIC.RUNTIME_MODE = RuntimeMode.TUNING
-_C.BASIC.TASK_MODE = TaskMode.CLASSIFICATION
-_C.BASIC.SAMPLING_STRATEGY = None
-# _C.BASIC.SAMPLING_STRATEGY = (Sampling.SMOTE, Sampling.RANDOM_UNDER_SAMPLING)  # None means don't use resampling
+_C.BASIC.MODEL = Model.SVM  # select training model e.g. SVM, RandomForest, ...
+_C.BASIC.RUNTIME_MODE = RuntimeMode.TRAIN  # runtime modes {Train, cross validation, hyperparameter tuning}
+_C.BASIC.TASK_MODE = TaskMode.CLASSIFICATION  # task mode = {classification, regression}
+_C.BASIC.SAMPLING_STRATEGY = None  # data resampling, {None,SMOTE,RANDOM_UNDER_SAMPLING} and {None} means don't use resampling, order is important e.g. (Sampling.SMOTE, Sampling.RANDOM_UNDER_SAMPLING),
+
 # -----------------------------------------------------------------------------
 # MODEL CONFIG
 # -----------------------------------------------------------------------------
 _C.MODEL = CN()
-_C.MODEL.NUM_CLASSES = 2
-_C.MODEL.K_FOLD = 5
+_C.MODEL.NUM_CLASSES = 2  # number of target classes for classification task
+_C.MODEL.K_FOLD = 5  # value of K for KFold cross-validation
 
 # -----------------------------------------------------------------------------
 # SAMPLING
@@ -70,17 +72,17 @@ _C.SVMSMOTE.OUT_STEP = 0.5  # float, default=0.5
 # Dataset
 # -----------------------------------------------------------------------------
 _C.DATASET = CN()
-_C.DATASET.DATASET_ADDRESS = '../data/dataset/bank.csv'
-_C.DATASET.DATASET_BRIEF_DESCRIPTION = '../data/dataset/description.txt'
-_C.DATASET.TARGET = 'y'
-_C.DATASET.HAS_CATEGORICAL_TARGETS = True
+_C.DATASET.DATASET_ADDRESS = '../data/dataset/bank.csv'  # the address of dataset file
+_C.DATASET.DATASET_BRIEF_DESCRIPTION = '../data/dataset/description.txt'  # if you have a brief description for your dataset
+_C.DATASET.TARGET = 'y'  # target column of your dataset
+_C.DATASET.HAS_CATEGORICAL_TARGETS = True  # True = if you have a categorical targets otherwise False
 
 """
 ('age','job','marital','education','default','balance',
 'housing','loan','contact','day','month','duration','campaign','pdays','previous','poutcome')
 """
 
-# columns
+# columns that you need to drop from dataframe
 _C.DATASET.DROP_COLS = (
 
     # 'duration',
@@ -106,9 +108,12 @@ _C.DATASET.DROP_COLS = (
 # ---------------------------------------------------------------------------- #
 _C.EVALUATION = CN()
 
-_C.EVALUATION.METRIC = MetricTypes.F1_SCORE_MICRO
-_C.EVALUATION.CONFUSION_MATRIX = False
+_C.EVALUATION.METRIC = MetricTypes.F1_SCORE_MICRO  # select your metric for your model
+_C.EVALUATION.CONFUSION_MATRIX = False  # set True if you need to plot the confusion matrix
+
 """
+Supported metrics:
+
 'accuracy', 'balanced_accuracy',  'top_k_accuracy',
  'average_precision',  'neg_brier_score', 'f1',
  'f1_micro', 'f1_macro',  'f1_weighted',
@@ -116,10 +121,12 @@ _C.EVALUATION.CONFUSION_MATRIX = False
   'recall',  'jaccard', 'roc_auc',
  'roc_auc_ovr', 'roc_auc_ovo',  'roc_auc_ovr_weighted',
  'roc_auc_ovo_weighted'
+ 
 """
 # -----------------------------------------------------------------------------
 # CATEGORICAL FEATURES ENCODER CONFIG / _C.ENCODER.{COLUMN NAME} = TYPE OF ENCODER
 # -----------------------------------------------------------------------------
+# if you have categorical column, write its name in CAPITAL letter
 _C.ENCODER = CN()
 _C.ENCODER.JOB = EncoderTypes.BINARY
 _C.ENCODER.MARITAL = EncoderTypes.BINARY
@@ -132,17 +139,17 @@ _C.ENCODER.MONTH = EncoderTypes.ORDINAL
 _C.ENCODER.POUTCOME = EncoderTypes.BINARY
 _C.ENCODER.Y = EncoderTypes.LABEL  # if your target is categorical
 # -----------------------------------------------------------------------------
-# SCALER /
+# SCALER
 # -----------------------------------------------------------------------------
 _C.SCALER = CN()
-_C.SCALER = ScaleTypes.STANDARD
+_C.SCALER = ScaleTypes.STANDARD  # select the type of scaler that you want to data
 
 # -----------------------------------------------------------------------------
 # DECOMPOSITION
 # -----------------------------------------------------------------------------
 _C.PCA = CN()
-_C.PCA.N_COMPONENTS = 0.7
-_C.PCA.PLOT = False
+_C.PCA.N_COMPONENTS = 0.7  # number of components
+_C.PCA.PLOT = False  # set True if you want to plot pca components
 
 # ---------------------------------------------------------------------------- #
 # Misc options
@@ -153,12 +160,14 @@ _C.PCA.PLOT = False
 # ---------------------------------------------------------------------------- #
 # Models
 # ---------------------------------------------------------------------------- #
+# support vector machine for classification task
+
 _C.SVM = CN()
 _C.SVM.NAME = 'SVM'
 
-_C.SVM.C = 1.0  # float, default=1.0
+_C.SVM.C = 10  # float, default=1.0
 _C.SVM.KERNEL = 'rbf'  # {'linear', 'poly', 'rbf', 'sigmoid', 'precomputed'}, default='rbf'
-_C.SVM.DEGREE = 3  # int, default=3
+_C.SVM.DEGREE = 1  # int, default=3
 _C.SVM.GAMMA = 'scale'  # {'scale', 'auto'} or float, default='scale'
 _C.SVM.COEF0 = 0.0  # float, default=0.0
 _C.SVM.SHRINKING = True  # bool, default=True
@@ -172,6 +181,7 @@ _C.SVM.DECISION_FUNCTION_SHAPE = 'ovr'  # {'ovo', 'ovr'}, default='ovr'
 _C.SVM.BREAK_TIES = False  # bool, default=False
 _C.SVM.RANDOM_STATE = _C.BASIC.RAND_STATE  # int or RandomState instance, default=None
 
+# support vector machine for regression task
 _C.SVR = CN()
 _C.SVR.NAME = 'SVM'
 
@@ -187,10 +197,11 @@ _C.SVR.CACHE_SIZE = 200  # float, default=200
 _C.SVR.VERBOSE = True  # bool, default=False
 _C.SVR.MAX_ITER = -1  # int, default=-1
 
+# configurations for hyperparameter tuning
 _C.SVM.HYPER_PARAM_TUNING = CN()
 _C.SVM.HYPER_PARAM_TUNING.KERNEL = ('linear', 'poly', 'rbf')
-_C.SVM.HYPER_PARAM_TUNING.C = (0.1, 1, 10, 100)
-_C.SVM.HYPER_PARAM_TUNING.DEGREE = (1, 2, 3, 4)
+_C.SVM.HYPER_PARAM_TUNING.C = (0.1, 1, 10)
+_C.SVM.HYPER_PARAM_TUNING.DEGREE = (1, 2, 3)
 _C.SVM.HYPER_PARAM_TUNING.GAMMA = ('scale', 'auto', 1, 0.1, 0.01, 0.001, 0.0001)
 _C.SVM.HYPER_PARAM_TUNING.COEF0 = None
 _C.SVM.HYPER_PARAM_TUNING.SHRINKING = None
@@ -226,6 +237,7 @@ _C.RANDOM_FOREST.CLASS_WEIGHT = None  # "balanced", "balanced_subsample"}, dict 
 _C.RANDOM_FOREST.CCP_ALPHA = 0.0  # non-negative float, default=0.0
 _C.RANDOM_FOREST.MAX_SAMPLES = None  # int or float, default=None
 
+# configurations for hyperparameter tuning
 _C.RANDOM_FOREST.HYPER_PARAM_TUNING = CN()
 _C.RANDOM_FOREST.HYPER_PARAM_TUNING.N_ESTIMATORS = [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000]
 _C.RANDOM_FOREST.HYPER_PARAM_TUNING.CRITERION = None
@@ -264,6 +276,7 @@ _C.LOGISTIC_REGRESSION.WARM_START = False  # bool, default=False
 _C.LOGISTIC_REGRESSION.N_JOBS = None  # int, default=None
 _C.LOGISTIC_REGRESSION.L1_RATIO = None  # float, default=None
 
+# configurations for hyperparameter tuning
 _C.LOGISTIC_REGRESSION.HYPER_PARAM_TUNING = CN()
 _C.LOGISTIC_REGRESSION.HYPER_PARAM_TUNING.PENALTY = None
 _C.LOGISTIC_REGRESSION.HYPER_PARAM_TUNING.DUAL = None
@@ -297,6 +310,7 @@ _C.DECISION_TREE.CLASS_WEIGHT = None  # class_weight : dict, list of dict or "ba
 _C.DECISION_TREE.PRESORT = 'deprecated'  # presort : deprecated, default='deprecated'
 _C.DECISION_TREE.CCP_ALPHA = 0.0  # ccp_alpha : non-negative float, default=0.0
 
+# configurations for hyperparameter tuning
 _C.DECISION_TREE.HYPER_PARAM_TUNING = CN()
 _C.DECISION_TREE.HYPER_PARAM_TUNING.CRITERION = ("gini", "entropy")
 _C.DECISION_TREE.HYPER_PARAM_TUNING.SPLITTER = ("best", "random")

@@ -1,3 +1,5 @@
+#  Copyright (c) 2021, Omid Erfanmanesh, All rights reserved.
+
 from configs import cfg
 from data.loader import load
 from data.preprocessing import Encoders, Scalers, PCA

@@ -1,5 +1,5 @@
-#  Copyright (c) 2021.
-#
+#  Copyright (c) 2021, Omid Erfanmanesh, All rights reserved.
+
 
 from data.based.based_dataset import BasedDataset
 from data.based.file_types import FileTypes

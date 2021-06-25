@@ -1,3 +1,5 @@
+#  Copyright (c) 2021, Omid Erfanmanesh, All rights reserved.
+
 class MetricTypes:
     F1_SCORE_BINARY = 0
     F1_SCORE_MICRO = 1

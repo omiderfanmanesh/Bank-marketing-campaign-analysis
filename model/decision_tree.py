@@ -1,3 +1,5 @@
+#  Copyright (c) 2021, Omid Erfanmanesh, All rights reserved.
+
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 
 from model.based import BasedModel, TaskMode
