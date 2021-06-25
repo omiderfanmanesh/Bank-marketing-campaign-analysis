@@ -1,5 +1,9 @@
-from configs import cfg
+from sklearn import preprocessing
 
 if __name__ == '__main__':
-    for c in cfg.ENCODER:
-        print(c, cfg.ENCODER[c])
+    labelList = ['no', 'yes', 'ok']
+
+    lb = preprocessing.LabelBinarizer()
+
+    dummY = lb.fit_transform(labelList)
+    print(dummY)

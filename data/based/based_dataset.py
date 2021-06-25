@@ -94,9 +94,9 @@ class BasedDataset:
 
         _X_train, _X_test, _y_train, _y_test = train_test_split(_X, _y, test_size=test_size, random_state=random_state)
         if has_validation:
-            _X_train, X_val, _y_train, y_val = train_test_split(_X_train, _y_train, test_size=val_size,
-                                                                random_state=random_state)
-            return _X_train, X_val, _X_test, _y_train, y_val, _y_test
+            _X_train, _X_val, _y_train, y_val = train_test_split(_X_train, _y_train, test_size=val_size,
+                                                                 random_state=random_state)
+            return _X_train, _X_val, _X_test, _y_train, y_val, _y_test
         else:
             return _X_train, _X_test, _y_train, _y_test
 

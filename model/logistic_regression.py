@@ -40,6 +40,9 @@ class LogisticRegression(BasedModel):
 
                 if _param is not None:
                     _param = [*_param]
-                    self.fine_tune_params[_k.lower()] = [*_param]
+                    if _k is 'C':
+                        self.fine_tune_params[_k] = [*_param]
+                    else:
+                        self.fine_tune_params[_k.lower()] = [*_param]
         else:
             print(f"this model can not be used for regression task")
