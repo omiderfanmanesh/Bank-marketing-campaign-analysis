@@ -52,7 +52,7 @@ class BasedModel:
         if y_pred is None and y_true is None:
             if metric_type == MetricTypes.F1_SCORE_BINARY:
                 return 'f1'
-            elif metric_type == MetricTypes.F1_SCORE_MACRO:
+            elif metric_type == MetricTypes.F1_SCORE_MICRO:
                 return 'f1_micro'
             elif metric_type == MetricTypes.F1_SCORE_MACRO:
                 return 'f1_macro'
