@@ -26,7 +26,7 @@ pd.set_option('display.max_colwidth', None)
 
 class BasedDataset:
 
-    def __init__(self, cfg, dataset_type, target_encoding=True):
+    def __init__(self, cfg, dataset_type):
 
         self._cfg = cfg
         self.dataset_type = dataset_type
