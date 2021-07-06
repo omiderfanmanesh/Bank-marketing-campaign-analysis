@@ -44,17 +44,31 @@ class BasedDataset:
         self.scaled_data = None
 
     def load_dataset(self):
+        """
+        load dataset from csv file to dataframe
+        """
         if self.dataset_type == FileTypes.CSV:
             self.df_main = self.__create_csv_dataframe()
         else:
             raise ValueError('dataset should be CSV file')
 
     def drop_cols(self):
+        """
+        drop columns from df
+
+        """
         if self._cfg.DATASET.DROP_COLS is not None:
             cols = list(self._cfg.DATASET.DROP_COLS)
             self.df = self.df.drop(labels=cols, axis=1)
 
     def transform(self, data, trans_type):
+        """
+        change the distribution of data by using log transformation, ...
+
+        :param data:
+        :param trans_type:
+        :return:
+        """
         _min = min(data)
         if _min <= 0:
             data = data + 1 - _min
@@ -71,24 +85,53 @@ class BasedDataset:
         return data
 
     def categorical_features(self, data=None):
+        """
+        select just categorical features from df
+
+        :param data:
+        :return:
+        """
         if data is None:
             return self.df.select_dtypes(include=['object']).columns.tolist()
         else:
             return data.select_dtypes(include=['object']).columns.tolist()
 
     def numerical_features(self, data=None):
+        """
+         select just numerical features from df
+
+        :param data:
+        :return:
+        """
         if data is None:
             return self.df.select_dtypes(exclude=['object']).columns.tolist()
         else:
             return data.select_dtypes(exclude=['object']).columns.tolist()
 
     def select_columns(self, data, cols=None, just_numerical=True):
+        """
+        select columns from df
+
+        :param data:
+        :param cols: array of columns that will be selected, None means select numerical features
+        :param just_numerical:
+        :return:
+        """
         if cols is None and just_numerical:
             cols = self.numerical_features(data=data)
         return data[cols]
 
     def split_to(self, test_size=0.10, val_size=0.10, has_validation=False, use_pca=False, random_state=seed):
+        """
+        split dataset to train, test, validation set.
 
+        :param test_size: size of test set
+        :param val_size: size of validation set
+        :param has_validation: set True if validation set is required
+        :param use_pca: split dataset from pca components
+        :param random_state:
+        :return:
+        """
         _X, _y = self.__samples_and_labels(use_pca=use_pca)
 
         _X_train, _X_test, _y_train, _y_test = train_test_split(_X, _y, test_size=test_size, random_state=random_state)
@@ -100,9 +143,22 @@ class BasedDataset:
             return _X_train, _X_test, _y_train, _y_test
 
     def generate_new_column_name(self, col, prefix):
+        """
+        generate new name for columns
+
+        :param col:
+        :param prefix:
+        :return:
+        """
         return '{}_{}'.format(col, prefix)
 
     def __samples_and_labels(self, use_pca=False):
+        """
+        return data as X and target values as y
+
+        :param use_pca: select X from pca
+        :return: data and label from df or pca
+        """
         _X = None
         if use_pca:
             if self.pca is not None:
@@ -117,6 +173,13 @@ class BasedDataset:
         return _X, _y
 
     def resampling(self, X, y):
+        """
+        resample dataset if you have imbalance data
+
+        :param X: data
+        :param y: targets
+        :return: return new data with resampling strategy
+        """
         steps = []
         if type(self._cfg.BASIC.SAMPLING_STRATEGY) is tuple:
             sampling_types = [*self._cfg.BASIC.SAMPLING_STRATEGY]
@@ -133,7 +196,12 @@ class BasedDataset:
         return X, y
 
     def __resampling_pipeline(self, sampling_type):
+        """
+        create a pipeline for resampling data
 
+        :param sampling_type:
+        :return: a pipeline contains resampling strategies
+        """
         steps = None
 
         if sampling_type == Sampling.RANDOM_UNDER_SAMPLING:
@@ -188,9 +256,18 @@ class BasedDataset:
         return steps
 
     def __create_csv_dataframe(self):
+        """
+        read data from csv file
+        :return: pandas dataframe
+        """
         return pd.read_csv(self.dataset_address, delimiter=';')
 
     def __open_txt_file(self, desc):
+        """
+        read contents from txt file
+        :param desc:
+        :return: contents as text
+        """
         return open(desc, 'r').read()
 
     @property

@@ -12,6 +12,13 @@ class Encoders:
         self._cfg = cdg
 
     def __get_encoder(self, encoder_type, col):
+        """
+        initialize encoder object
+
+        :param encoder_type:
+        :param col: columns that you want to encode.Iit is used for category_encoders package
+        :return: encoder obj, encoder name
+        """
         le = None
         le_name = None
         if encoder_type == EncoderTypes.LABEL:
@@ -30,6 +37,18 @@ class Encoders:
         return le, le_name
 
     def __get_encoded_data(self, enc, data, y, X_train=None, X_test=None, y_train=None, y_test=None):
+        """
+        returned encoded data
+
+        :param enc:
+        :param data:
+        :param y:
+        :param X_train:
+        :param X_test:
+        :param y_train:
+        :param y_test:
+        :return: encoded dataframe
+        """
         train_enc, test_enc, data_enc = None, None, None
         if isinstance(enc, LabelEncoder):
             if data is None and y is None:
@@ -57,6 +76,16 @@ class Encoders:
             return data_enc
 
     def __encode_by_configs(self, data=None, y=None, X_train=None, X_test=None, y_train=None, y_test=None):
+        """
+        encode data and set the configurations
+        :param data:
+        :param y:
+        :param X_train:
+        :param X_test:
+        :param y_train:
+        :param y_test:
+        :return:
+        """
         for col in tqdm(self._cfg.ENCODER):
             encode_type = self._cfg.ENCODER[col]
             col = col.lower()
@@ -91,7 +120,16 @@ class Encoders:
             return data
 
     def do_encode(self, data=None, y=None, X_train=None, X_test=None, y_train=None, y_test=None):
-
+        """
+        apply encoders
+        :param data:
+        :param y:
+        :param X_train:
+        :param X_test:
+        :param y_train:
+        :param y_test:
+        :return:
+        """
         params = {
             'data': data,
             'y': y,
@@ -104,5 +142,13 @@ class Encoders:
         return self.__encode_by_configs(**params)
 
     def custom_encoding(self, data, col, encode_type):
+        """
+        if you want to use custom encoders for a specific column
+
+        :param data:
+        :param col:
+        :param encode_type:
+        :return:
+        """
         enc, enc_name = self.__get_encoder(encoder_type=encode_type, col=col)
         return enc.fit_transform(data[col])
