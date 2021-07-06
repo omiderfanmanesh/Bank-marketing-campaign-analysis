@@ -117,11 +117,17 @@ class BasedDataset:
         return _X, _y
 
     def resampling(self, X, y):
-        sampling_types = [*self._cfg.BASIC.SAMPLING_STRATEGY]
         steps = []
-        for smp in sampling_types:
-            step = self.__resampling_pipeline(sampling_type=smp)
+        if type(self._cfg.BASIC.SAMPLING_STRATEGY) is tuple:
+            sampling_types = [*self._cfg.BASIC.SAMPLING_STRATEGY]
+            for smp in sampling_types:
+                step = self.__resampling_pipeline(sampling_type=smp)
+                steps.append(step)
+        else:
+            sampling_types = self._cfg.BASIC.SAMPLING_STRATEGY
+            step = self.__resampling_pipeline(sampling_type=sampling_types)
             steps.append(step)
+
         pipeline = Pipeline(steps=steps)
         X, y = pipeline.fit_resample(X, y)
         return X, y
