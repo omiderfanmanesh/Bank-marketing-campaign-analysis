@@ -96,6 +96,14 @@ def do_cross_val(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoder
     # convert categorical features to integer
     _X = encoder.do_encode(data=dataset.df.drop(dataset.target_col, axis=1), y=_y)
 
+    # if you set the resampling strategy, it will balance your data based on your strategy
+    if cfg.BASIC.SAMPLING_STRATEGY is not None:
+        counter = Counter(_y)
+        print(f"Before sampling {counter}")
+        X_train, y_train = dataset.resampling(X=_X, y=_y)
+        counter = Counter(y_train)
+        print(f"After sampling {counter}")
+
     # change the scale of data
     if scaler is not None:
         _X = scaler.do_scale(data=_X)

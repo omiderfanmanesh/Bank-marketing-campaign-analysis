@@ -88,11 +88,8 @@ of 0.99 from SVM model.
 Just add your dataset file to *data/dataset* and put your all configuration at *config/defaults.py*. I will explain
 configuration settings below:
 
---------------------------------------------------------------------
 
 ## BASIC CONFIGS
-
---------------------------------------------------------------------
 
 Initialize the BASIC configs for our project:
 
@@ -144,11 +141,7 @@ _C.BASIC.SAMPLING_STRATEGY = None # don't use any sampling strategy
 # _C.BASIC.SAMPLING_STRATEGY = (Sampling.SMOTE, Sampling.RANDOM_UNDER_SAMPLING) # use first SMOTE then RANDOM_UNDER_SAMPLING
 ```
 
------------------------------------------------------------------------------
-
 ## MODEL CONFIGS
-
------------------------------------------------------------------------------
 
 Initialize the MODEL configs for our project:
 
@@ -174,11 +167,7 @@ If you want to shuffle the data set it to True otherwise False
 _C.MODEL.SHUFFLE = True  
 ```
 
------------------------------------------------------------------------------
-
 ## Dataset
-
------------------------------------------------------------------------------
 
 Initialize the DATASET configs for our project:
 
@@ -236,11 +225,8 @@ _C.DATASET.DROP_COLS = (
 )
 ```
 
----------------------------------------------------------------------------- 
-
 ## METRIC
 
----------------------------------------------------------------------------- 
 
 Initialize the EVALUATION configs for our project:
 
@@ -268,11 +254,8 @@ set True if you need to plot the confusion matrix at the end of evaluation proce
 _C.EVALUATION.CONFUSION_MATRIX = False  
 ```
 
------------------------------------------------------------------------------
-
 ## CATEGORICAL FEATURES ENCODER CONFIG
 
------------------------------------------------------------------------------
 Initialize the ENCODER configs for our project:
 
 ```python
@@ -306,11 +289,8 @@ _C.ENCODER.Y = EncoderTypes.CUSTOM
 then you should write a method inside your dataset class and call it before encoding phase. CUSTOM means you don't want
 to use encoders of *EncoderTypes*.
 
------------------------------------------------------------------------------
 
 ## SCALER
-
------------------------------------------------------------------------------
 
 Initialize the SCALER configs for our project:
 
@@ -324,11 +304,8 @@ select the type of scaler (STANDARD SCALER, MINMAX SCALER, ...) that you want to
 _C.SCALER = ScaleTypes.STANDARD 
 ```
 
------------------------------------------------------------------------------
-
 ## DECOMPOSITION
 
------------------------------------------------------------------------------
 if you set ```_C.BASIC.PCA = True```, the PCA configuarion will be loaded from this section:
 
 Initialize the SCALER configs for our project:
@@ -351,7 +328,6 @@ _C.PCA.PLOT = False
 
 ## SAMPLING
 
------------------------------------------------------------------------------
 All configuration that we need for data resampling is in this section. For example,  
 if you set *_C.BASIC.SAMPLING_STRATEGY = (Sampling.SMOTE)*, The configs of SMOTE will be loaded from this part.
 
@@ -390,11 +366,8 @@ _C.SVMSMOTE.M_NEIGHBORS = 10  # int or object, default=10
 _C.SVMSMOTE.OUT_STEP = 0.5  # float, default=0.5
 ```
 
----------------------------------------------------------------------------- 
-
 ## Models
 
----------------------------------------------------------------------------- 
 
 when you select ```_C.BASIC.MODEL = Model.SVM ```, the configuration of SVM model will be loaded from here:
 
@@ -463,4 +436,3 @@ _C.SVM.HYPER_PARAM_TUNING.BREAK_TIES = None
 
 ```
 
-## example
