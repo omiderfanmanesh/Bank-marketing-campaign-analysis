@@ -14,6 +14,11 @@ class PCA:
         self.pca = skl_pca(n_components=self.n_components, random_state=cfg.BASIC.RAND_STATE)
 
     def do_pca(self, data):
+        """
+        apply pca to data
+        :param data:
+        :return: dataframe of pca components
+        """
         _components = self.pca.fit_transform(data)
         print('Explained variance: %.4f' % self.pca.explained_variance_ratio_.sum())
         print('Individual variance contributions:')
@@ -27,6 +32,11 @@ class PCA:
         return _pca_df
 
     def plot(self, X, y):
+        """
+        scatter plot of pca components
+        :param X:
+        :param y:
+        """
         X['y'] = y
         sns.pairplot(X, hue="y", height=2.5)
         plt.show()

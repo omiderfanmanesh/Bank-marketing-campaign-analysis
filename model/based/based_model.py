@@ -30,11 +30,25 @@ class BasedModel:
         self._confusion_matrix = cfg.EVALUATION.CONFUSION_MATRIX
 
     def train(self, X_train, y_train):
+        """
+        train the model
+
+        :param X_train:
+        :param y_train:
+        :return:
+        """
         print('start training...')
         self.model.fit(X_train, y_train)
         return self.model
 
     def evaluate(self, X_test, y_test, target_labels=None, normalize=None):
+        """
+        evaluate the model based on a metric
+        :param X_test: test set
+        :param y_test: test targets
+        :param target_labels: distinct target values in list
+        :param normalize: it is for confusion matrix
+        """
         print('evaluation...')
         y_pred = self.model.predict(X_test)
         score = self.metric(y_test, y_pred)
@@ -47,6 +61,13 @@ class BasedModel:
             plt.show()
 
     def metric(self, y_true=None, y_pred=None):
+        """
+        initialize the metric for evaluation the model
+
+        :param y_true:
+        :param y_pred:
+        :return: metric obj or name
+        """
         metric_type = self._metric_function
 
         if y_pred is None and y_true is None:
@@ -85,6 +106,14 @@ class BasedModel:
                 return accuracy_score(y_true, y_pred)
 
     def hyper_parameter_tuning(self, X, y, title='', method=TuningMode.GRID_SEARCH):
+        """
+        apply hyper parameter tuning
+        :param X:
+        :param y:
+        :param title:
+        :param method:
+        :return:
+        """
         opt = None
         callbacks = None
         if self.fine_tune_params:
@@ -102,6 +131,11 @@ class BasedModel:
             print('There are no params for tuning')
 
     def feature_importance(self, features=None):
+        """
+        detect important features for a model
+
+        :param features: column names, it will be used for printing the columns
+        """
         if self.use_for_feature_importance:
             if hasattr(self.model, 'coef_'):
                 importance = self.model.coef_[0]
@@ -159,6 +193,14 @@ class BasedModel:
         return best_params
 
     def plot_tree(self, X, y, target_name, feature_names, class_names):
+        """
+        plot the decision trees. Note that it will be work just for decision tree classifier
+        :param X:
+        :param y:
+        :param target_name:
+        :param feature_names:
+        :param class_names:
+        """
         viz = dtreeviz(self.model, X, y,
                        target_name=target_name,
                        feature_names=feature_names,
