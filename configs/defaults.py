@@ -2,7 +2,7 @@
 
 from yacs.config import CfgNode as CN
 
-from data.based import EncoderTypes, ScaleTypes
+from data.based import EncoderTypes, ScaleTypes, Sampling
 from model.based import MetricTypes, TaskMode
 from model.based import Model
 from utils import RuntimeMode
@@ -20,11 +20,14 @@ _C.BASIC = CN()
 _C.BASIC.SEED = 2021
 _C.BASIC.PCA = False  # pca = True will apply principal component analysis to data
 _C.BASIC.RAND_STATE = 2021
-_C.BASIC.MODEL = Model.SVM  # select training model e.g. SVM, RandomForest, ...
-_C.BASIC.RUNTIME_MODE = RuntimeMode.CROSS_VAL  # runtime modes {Train, cross validation, hyperparameter tuning}
+_C.BASIC.MODEL = Model.DECISION_TREE  # select training model e.g. SVM, RandomForest, ...
+_C.BASIC.RUNTIME_MODE = RuntimeMode.TRAIN  # runtime modes {Train, cross validation, hyperparameter tuning}
 _C.BASIC.TASK_MODE = TaskMode.CLASSIFICATION  # task mode = {classification, regression}
-_C.BASIC.SAMPLING_STRATEGY = None  # data resampling, {None,SMOTE,RANDOM_UNDER_SAMPLING} and {None} means don't use resampling, order is important e.g. (Sampling.SMOTE, Sampling.RANDOM_UNDER_SAMPLING),
-
+# data resampling, {None,SMOTE,RANDOM_UNDER_SAMPLING} and {None} means don't use
+# resampling, order is important e.g. (Sampling.SMOTE, Sampling.RANDOM_UNDER_SAMPLING),
+# _C.BASIC.SAMPLING_STRATEGY = None
+# _C.BASIC.SAMPLING_STRATEGY = (Sampling.SMOTE)
+_C.BASIC.SAMPLING_STRATEGY = (Sampling.SMOTE, Sampling.RANDOM_UNDER_SAMPLING)
 # -----------------------------------------------------------------------------
 # MODEL CONFIG
 # -----------------------------------------------------------------------------
@@ -32,41 +35,6 @@ _C.MODEL = CN()
 _C.MODEL.NUM_CLASSES = 2  # number of target classes for classification task
 _C.MODEL.K_FOLD = 5  # value of K for KFold cross-validation
 _C.MODEL.SHUFFLE = True  # shuffle the data for cross-validation task
-# -----------------------------------------------------------------------------
-# SAMPLING
-# -----------------------------------------------------------------------------
-_C.RANDOM_UNDER_SAMPLER = CN()
-_C.RANDOM_UNDER_SAMPLER.SAMPLING_STRATEGY = 'auto'  # float, str, dict, callable, default=’auto’
-_C.RANDOM_UNDER_SAMPLER.RANDOM_STATE = 2021  # int, RandomState instance, default=None
-_C.RANDOM_UNDER_SAMPLER.REPLACEMENT = False  # bool, default=False
-
-_C.RANDOM_OVER_SAMPLER = CN()
-_C.RANDOM_OVER_SAMPLER.SAMPLING_STRATEGY = 'minority'  # float, str, dict or callable, default=’auto’
-_C.RANDOM_OVER_SAMPLER.RANDOM_STATE = 2021  # int, RandomState instance, default=None
-# _C.RANDOM_OVER_SAMPLER.SHRINKAGE = 0  # float or dict, default=None
-
-_C.SMOTE = CN()
-_C.SMOTE.SAMPLING_STRATEGY = 'auto'  # float, str, dict or callable, default=’auto’ {'minority'}
-_C.SMOTE.RANDOM_STATE = 2021  # int, RandomState instance, default=None
-_C.SMOTE.K_NEIGHBORS = 5  # int or object, default=5
-_C.SMOTE.N_JOBS = -1  # int, default=None
-
-_C.SMOTENC = CN()
-_C.SMOTENC.CATEGORICAL_FEATURES = ('job', 'marital', 'education', 'default', 'housing', 'loan', 'contact',
-                                   'month')  # ndarray of shape (n_cat_features,) or (n_features,)
-_C.SMOTENC.SAMPLING_STRATEGY = 'minority'  # float, str, dict or callable, default=’auto’
-_C.SMOTENC.RANDOM_STATE = 2021  # int, RandomState instance, default=None
-_C.SMOTENC.K_NEIGHBORS = 5  # int or object, default=5
-_C.SMOTENC.N_JOBS = -1  # int, default=None
-
-_C.SVMSMOTE = CN()
-_C.SVMSMOTE.SAMPLING_STRATEGY = 'auto'  # float, str, dict or callable, default=’auto’ {'minority'}
-_C.SVMSMOTE.RANDOM_STATE = 2021  # int, RandomState instance, default=None
-_C.SVMSMOTE.K_NEIGHBORS = 3  # int or object, default=5
-_C.SVMSMOTE.N_JOBS = -1  # int, default=None
-_C.SVMSMOTE.M_NEIGHBORS = 10  # int or object, default=10
-# _C.SVMSMOTE.SVM_ESTIMATOR = 5  # estimator object, default=SVC()
-_C.SVMSMOTE.OUT_STEP = 0.5  # float, default=0.5
 
 # -----------------------------------------------------------------------------
 # Dataset
@@ -103,9 +71,9 @@ _C.DATASET.DROP_COLS = (
     # 'default'
 
 )
-# ---------------------------------------------------------------------------- #
+# ----------------------------------------------------------------------------
 # metric
-# ---------------------------------------------------------------------------- #
+# ----------------------------------------------------------------------------
 _C.EVALUATION = CN()
 
 _C.EVALUATION.METRIC = MetricTypes.F1_SCORE_MICRO  # select your metric for your model
@@ -142,7 +110,7 @@ _C.ENCODER.Y = EncoderTypes.LABEL  # if your target is categorical
 # SCALER
 # -----------------------------------------------------------------------------
 _C.SCALER = CN()
-_C.SCALER = ScaleTypes.STANDARD  # select the type of scaler that you want to data
+_C.SCALER = ScaleTypes.STANDARD  # select the type of scaler (STANDARD SCALER, MINMAX SCALER, ...) that you want to apply to your data
 
 # -----------------------------------------------------------------------------
 # DECOMPOSITION
@@ -156,10 +124,45 @@ _C.PCA.PLOT = False  # set True if you want to plot pca components
 # ---------------------------------------------------------------------------- #
 # _C.OUTPUT_DIR = "../outputs"
 
+# -----------------------------------------------------------------------------
+# SAMPLING
+# -----------------------------------------------------------------------------
+_C.RANDOM_UNDER_SAMPLER = CN()
+_C.RANDOM_UNDER_SAMPLER.SAMPLING_STRATEGY = 'auto'  # float, str, dict, callable, default=’auto’
+_C.RANDOM_UNDER_SAMPLER.RANDOM_STATE = 2021  # int, RandomState instance, default=None
+_C.RANDOM_UNDER_SAMPLER.REPLACEMENT = False  # bool, default=False
 
-# ---------------------------------------------------------------------------- #
+_C.RANDOM_OVER_SAMPLER = CN()
+_C.RANDOM_OVER_SAMPLER.SAMPLING_STRATEGY = 'minority'  # float, str, dict or callable, default=’auto’
+_C.RANDOM_OVER_SAMPLER.RANDOM_STATE = 2021  # int, RandomState instance, default=None
+# _C.RANDOM_OVER_SAMPLER.SHRINKAGE = 0  # float or dict, default=None
+
+_C.SMOTE = CN()
+_C.SMOTE.SAMPLING_STRATEGY = 'auto'  # float, str, dict or callable, default=’auto’ {'minority'}
+_C.SMOTE.RANDOM_STATE = 2021  # int, RandomState instance, default=None
+_C.SMOTE.K_NEIGHBORS = 5  # int or object, default=5
+_C.SMOTE.N_JOBS = -1  # int, default=None
+
+_C.SMOTENC = CN()
+_C.SMOTENC.CATEGORICAL_FEATURES = ('job', 'marital', 'education', 'default', 'housing', 'loan', 'contact',
+                                   'month')  # ndarray of shape (n_cat_features,) or (n_features,)
+_C.SMOTENC.SAMPLING_STRATEGY = 'minority'  # float, str, dict or callable, default=’auto’
+_C.SMOTENC.RANDOM_STATE = 2021  # int, RandomState instance, default=None
+_C.SMOTENC.K_NEIGHBORS = 5  # int or object, default=5
+_C.SMOTENC.N_JOBS = -1  # int, default=None
+
+_C.SVMSMOTE = CN()
+_C.SVMSMOTE.SAMPLING_STRATEGY = 'auto'  # float, str, dict or callable, default=’auto’ {'minority'}
+_C.SVMSMOTE.RANDOM_STATE = 2021  # int, RandomState instance, default=None
+_C.SVMSMOTE.K_NEIGHBORS = 3  # int or object, default=5
+_C.SVMSMOTE.N_JOBS = -1  # int, default=None
+_C.SVMSMOTE.M_NEIGHBORS = 10  # int or object, default=10
+# _C.SVMSMOTE.SVM_ESTIMATOR = 5  # estimator object, default=SVC()
+_C.SVMSMOTE.OUT_STEP = 0.5  # float, default=0.5
+
+# ----------------------------------------------------------------------------
 # Models
-# ---------------------------------------------------------------------------- #
+# ----------------------------------------------------------------------------
 # support vector machine for classification task
 
 _C.SVM = CN()
@@ -213,7 +216,7 @@ _C.SVM.HYPER_PARAM_TUNING.MAX_ITER = None
 _C.SVM.HYPER_PARAM_TUNING.DECISION_FUNCTION_SHAPE = None
 _C.SVM.HYPER_PARAM_TUNING.BREAK_TIES = None
 
-# ---------------------------------------------------------------------------- #
+# ----------------------------------------------------------------------------
 _C.RANDOM_FOREST = CN()
 _C.RANDOM_FOREST.NAME = 'RANDOM_FOREST'
 
@@ -256,7 +259,7 @@ _C.RANDOM_FOREST.HYPER_PARAM_TUNING.CLASS_WEIGHT = None
 _C.RANDOM_FOREST.HYPER_PARAM_TUNING.CCP_ALPHA = None
 _C.RANDOM_FOREST.HYPER_PARAM_TUNING.MAX_SAMPLES = None
 
-# ---------------------------------------------------------------------------- #
+# ----------------------------------------------------------------------------
 _C.LOGISTIC_REGRESSION = CN()
 _C.LOGISTIC_REGRESSION.NAME = 'LOGISTIC REGRESSION'
 
@@ -291,7 +294,7 @@ _C.LOGISTIC_REGRESSION.HYPER_PARAM_TUNING.MULTI_CLASS = None
 _C.LOGISTIC_REGRESSION.HYPER_PARAM_TUNING.WARM_START = None
 _C.LOGISTIC_REGRESSION.HYPER_PARAM_TUNING.L1_RATIO = None
 
-# ---------------------------------------------------------------------------- #
+# ----------------------------------------------------------------------------
 _C.DECISION_TREE = CN()
 _C.DECISION_TREE.NAME = 'DECISION TREE'
 
@@ -325,4 +328,4 @@ _C.DECISION_TREE.HYPER_PARAM_TUNING.MIN_IMPURITY_SPLIT = None
 _C.DECISION_TREE.HYPER_PARAM_TUNING.CLASS_WEIGHT = None
 _C.DECISION_TREE.HYPER_PARAM_TUNING.PRESORT = None
 _C.DECISION_TREE.HYPER_PARAM_TUNING.CCP_ALPHA = None
-# ---------------------------------------------------------------------------- #
+# ----------------------------------------------------------------------------
