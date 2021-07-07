@@ -1,6 +1,7 @@
 #  Copyright (c) 2021, Omid Erfanmanesh, All rights reserved.
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
 from sklearn.decomposition import PCA as skl_pca
@@ -13,7 +14,7 @@ class PCA:
         self.n_components = cfg.PCA.N_COMPONENTS
         self.pca = skl_pca(n_components=self.n_components, random_state=cfg.BASIC.RAND_STATE)
 
-    def do_pca(self, data):
+    def do_pca(self, data, y):
         """
         apply pca to data
         :param data:
@@ -26,6 +27,10 @@ class PCA:
             print(self.pca.explained_variance_ratio_[j])
 
         _columns = ['pc' + str(i + 1) for i in range(self.pca.n_components_)]
+        _columns.append('y')
+
+        y = np.reshape(y.values, (y.values.shape[0], -1)).copy()
+        _components = np.concatenate((_components, y), axis=1)
         _pca_df = pd.DataFrame(data=_components
                                , columns=_columns)
 

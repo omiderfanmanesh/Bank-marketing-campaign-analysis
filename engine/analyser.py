@@ -7,13 +7,13 @@ from eda.based.based_plots import BasedPlot
 
 
 def do_analysis(dataset: BasedDataset, plots: BasedPlot, analyzer: BasedAnalyzer, encoder: Encoders, scaler: Scalers):
-    analyzer.description()
-
+    plots.resample(encoder=encoder, scaler=scaler)
+    # analyzer.description()
     # plots.rel(x='balance', y='age')
     # plots.duration()
     # dataset.duration()
     # analyzer.duration()
-    analyzer.loan()
+    # analyzer.loan()
     # plots.loan()
     # analyzer.description()
     # _data = encoder.do_encode(data=dataset.df, y=dataset.targets.values)

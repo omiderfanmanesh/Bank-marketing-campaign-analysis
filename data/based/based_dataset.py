@@ -108,7 +108,7 @@ class BasedDataset:
         else:
             return data.select_dtypes(exclude=['object']).columns.tolist()
 
-    def select_columns(self, data, cols=None, just_numerical=True):
+    def select_columns(self, data, cols=None, just_numerical=False):
         """
         select columns from df
 
@@ -117,7 +117,7 @@ class BasedDataset:
         :param just_numerical:
         :return:
         """
-        if cols is None and just_numerical:
+        if cols is None or just_numerical:
             cols = self.numerical_features(data=data)
         return data[cols]
 
@@ -160,15 +160,16 @@ class BasedDataset:
         :return: data and label from df or pca
         """
         _X = None
+        _y = None
         if use_pca:
             if self.pca is not None:
-                _X = self.pca.copy()
+                _X = self.pca.copy().drop(labels=[self.target_col], axis=1)
+                _y = self.pca[self.target_col].copy()
             else:
                 print('pca data frame is not provided')
         else:
             _X = self.df.copy().drop(labels=[self.target_col], axis=1)
-
-        _y = self.df[self.target_col].copy()
+            _y = self.df[self.target_col].copy()
 
         return _X, _y
 
@@ -180,6 +181,10 @@ class BasedDataset:
         :param y: targets
         :return: return new data with resampling strategy
         """
+
+        if self._cfg.BASIC.SAMPLING_STRATEGY is None:
+            raise ValueError(" SAMPLING_STRATEGY is None, Check the defaults.py")
+
         steps = []
         if type(self._cfg.BASIC.SAMPLING_STRATEGY) is tuple:
             sampling_types = [*self._cfg.BASIC.SAMPLING_STRATEGY]

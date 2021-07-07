@@ -17,6 +17,7 @@ class BasedPlot:
     def __init__(self, dataset: BasedDataset, cfg):
         self._dataset = dataset
         self._df = dataset.df
+        self.cfg = cfg
 
     def category_count(self, col, lbl_rotation=None):
 
