@@ -16,6 +16,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 def main():
     bank = load(cfg)
     bank.load_dataset()
+    bank.drop_cols()
 
     encoder = Encoders(cdg=cfg)
     scaler = Scalers(cfg=cfg)

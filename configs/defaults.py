@@ -20,14 +20,14 @@ _C.BASIC = CN()
 _C.BASIC.SEED = 2021
 _C.BASIC.PCA = False  # pca = True will apply principal component analysis to data
 _C.BASIC.RAND_STATE = 2021
-_C.BASIC.MODEL = Model.SVM  # select training model e.g. SVM, RandomForest, ...
+_C.BASIC.MODEL = Model.RANDOM_FOREST  # select training model e.g. SVM, RandomForest, ...
 _C.BASIC.RUNTIME_MODE = RuntimeMode.TRAIN  # runtime modes {Train, cross validation, hyperparameter tuning}
 _C.BASIC.TASK_MODE = TaskMode.CLASSIFICATION  # task mode = {classification, regression}
 # data resampling, {None,SMOTE,RANDOM_UNDER_SAMPLING} and {None} means don't use
 # resampling, order is important e.g. (Sampling.SMOTE, Sampling.RANDOM_UNDER_SAMPLING),
 # _C.BASIC.SAMPLING_STRATEGY = None
-# _C.BASIC.SAMPLING_STRATEGY = (Sampling.SMOTE)
-_C.BASIC.SAMPLING_STRATEGY = (Sampling.SMOTE, Sampling.RANDOM_UNDER_SAMPLING)
+# _C.BASIC.SAMPLING_STRATEGY = (Sampling.RANDOM_UNDER_SAMPLING)
+_C.BASIC.SAMPLING_STRATEGY = (Sampling.RANDOM_OVER_SAMPLING, Sampling.RANDOM_UNDER_SAMPLING)
 # -----------------------------------------------------------------------------
 # MODEL CONFIG
 # -----------------------------------------------------------------------------
@@ -116,8 +116,8 @@ _C.SCALER = ScaleTypes.STANDARD  # select the type of scaler (STANDARD SCALER, M
 # DECOMPOSITION
 # -----------------------------------------------------------------------------
 _C.PCA = CN()
-_C.PCA.N_COMPONENTS = 0.7  # number of components
-_C.PCA.PLOT = False  # set True if you want to plot pca components
+_C.PCA.N_COMPONENTS = 5  # number of components
+_C.PCA.PLOT = True  # set True if you want to plot pca components
 
 # ---------------------------------------------------------------------------- #
 # Misc options

@@ -1,5 +1,10 @@
 #  Copyright (c) 2021, Omid Erfanmanesh, All rights reserved.
 
+from collections import Counter
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 from data.based import TransformersType
 from eda.based import BasedPlot
 
@@ -27,8 +32,6 @@ class BankPlots(BasedPlot):
     def education(self):
         self.category_count(col='education')
         self.bar(x='education', y='age')
-
-
 
     def default(self):
         self.category_count(col='default')
@@ -107,3 +110,35 @@ class BankPlots(BasedPlot):
 
     def y(self):
         self.category_count(col='y')
+
+    def resample(self, encoder, scaler):
+        self.dataset.df[self.dataset.target_col] = encoder.custom_encoding(self.dataset.df, col=self.cfg.DATASET.TARGET,
+                                                                           encode_type=self.cfg.ENCODER.Y)
+        if encoder is None:
+            _data = self.dataset.select_columns(data=self.dataset.df)
+        else:
+            # convert categorical features to integer
+            _data = encoder.do_encode(data=self.dataset.df, y=self.dataset.targets.values)
+
+        _y = _data[self.dataset.target_col]
+        _X = _data.drop([self.dataset.target_col], axis=1)
+
+        # change the scale of data
+        if scaler is not None:
+            _X = scaler.do_scale(data=_X)
+
+        # if you set the resampling strategy, it will balance your data based on your strategy
+        counter = Counter(_y)
+        print(f"Before sampling {counter}")
+        _X_resample, _y_resample = self.dataset.resampling(X=_X, y=_y)
+        counter = Counter(_y_resample)
+        print(f"After sampling {counter}")
+
+        print("plotting origin values...")
+        _X['y'] = _y
+        sns.pairplot(_X, hue="y", height=2.5)
+        plt.show()
+        print("plotting resampled values...")
+        _X_resample['y'] = _y_resample
+        sns.pairplot(_X_resample, hue="y", height=2.5)
+        plt.show()

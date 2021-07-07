@@ -18,21 +18,28 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 def do_train(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, scaler: Scalers, pca: PCA,
              feature_importance=False):
+    # encode target values
+    dataset.df[dataset.target_col] = encoder.custom_encoding(dataset.df, col=cfg.DATASET.TARGET,
+                                                             encode_type=cfg.ENCODER.Y)
     if pca is None:
-        # encode target values
-        dataset.df[dataset.target_col] = encoder.custom_encoding(dataset.df, col=cfg.DATASET.TARGET,
-                                                                 encode_type=cfg.ENCODER.Y)
+
         # split data to train and test sub-dataset
         X_train, X_test, y_train, y_test = dataset.split_to()
 
         # convert categorical features to integer
-        if encoder is not None:
+        if encoder is None:
+            # select integer columns ( if your encoder is None, it will select just integer columns for training)
+            X_train = dataset.select_columns(data=X_train)
+            X_test = dataset.select_columns(data=X_test)
+        else:
             X_train, X_test = encoder.do_encode(X_train=X_train, X_test=X_test, y_train=y_train,
                                                 y_test=y_test)
 
-        # select integer columns ( if your encoder is None, it will select just integer columns for training)
-        X_train = dataset.select_columns(data=X_train)
-        X_test = dataset.select_columns(data=X_test)
+        # get columns before scaling data, it will be used for feature importance method
+        columns = X_train.columns
+        # change the scale of data
+        if scaler is not None:
+            X_train, X_test = scaler.do_scale(X_train=X_train, X_test=X_test)
 
         # if you set the resampling strategy, it will balance your data based on your strategy
         if cfg.BASIC.SAMPLING_STRATEGY is not None:
@@ -42,32 +49,34 @@ def do_train(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, s
             counter = Counter(y_train)
             print(f"After sampling {counter}")
 
-        # get columns before scaling data, it will be used for feature importance method
-        columns = X_train.columns
-        # change the scale of data
-        if scaler is not None:
-            X_train, X_test = scaler.do_scale(X_train=X_train, X_test=X_test)
     else:
-        if encoder is not None:
-            # encode target values
-            dataset.df[dataset.target_col] = encoder.custom_encoding(dataset.df, col=cfg.DATASET.TARGET,
-                                                                     encode_type=cfg.ENCODER.Y)
+        if encoder is None:
+            _data = dataset.select_columns(data=dataset.df)
+        else:
             # convert categorical features to integer
             _data = encoder.do_encode(data=dataset.df, y=dataset.targets.values)
-        else:
-            _data = dataset.select_columns(data=dataset.df)
 
+        _y = _data[dataset.target_col]
+        _X = _data.drop([dataset.target_col], axis=1)
         # change the scale of data
         if scaler is not None:
-            _data = scaler.do_scale(data=_data)
+            _X = scaler.do_scale(data=_X)
+
+        # if you set the resampling strategy, it will balance your data based on your strategy
+        if cfg.BASIC.SAMPLING_STRATEGY is not None:
+            counter = Counter(_y)
+            print(f"Before sampling {counter}")
+            _X, _y = dataset.resampling(X=_X, y=_y)
+            counter = Counter(_y)
+            print(f"After sampling {counter}")
 
         # apply pca analysis to data
-        df_pca = pca.do_pca(data=_data)
+        df_pca = pca.do_pca(data=_X.copy(deep=True), y=_y)
         # set True if you need to plot the pca components
         if cfg.PCA.PLOT:
-            pca.plot(X=df_pca, y=dataset.df[dataset.target_col])
+            pca.plot(X=df_pca.copy(deep=True), y=_y)
         # store pca values to dataset object
-        dataset.pca = df_pca
+        dataset.pca = df_pca.copy(deep=True)
         # get columns of pca dataframe, it will be used for feature importance method
         columns = df_pca.columns
         # create train, test dataset
@@ -84,29 +93,33 @@ def do_train(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, s
     if feature_importance:
         model.feature_importance(features=list(columns))
 
-    # plot trees, it will work just for Decision Tree classifier
-    # model.plot_tree(X=X_train,y=y_train,target_name='y',feature_names=X_train.columns,class_names=class_names)
+    # # plot trees, it will work just for Decision Tree classifier
+    # model.plot_tree(X=X_train, y=y_train, target_name='y', feature_names=X_train.columns, class_names=class_names)
 
 
 def do_cross_val(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, scaler: Scalers, pca: PCA):
     # encode target values
     _y = encoder.custom_encoding(dataset.df, col=cfg.DATASET.TARGET,
                                  encode_type=cfg.ENCODER.Y)
+    _X = dataset.df.drop(dataset.target_col, axis=1)
 
-    # convert categorical features to integer
-    _X = encoder.do_encode(data=dataset.df.drop(dataset.target_col, axis=1), y=_y)
+    if encoder is None:
+        _X = dataset.select_columns(data=_X)
+    else:
+        # convert categorical features to integer
+        _X = encoder.do_encode(data=_X, y=_y)
+
+    # change the scale of data
+    if scaler is not None:
+        _X = scaler.do_scale(data=_X)
 
     # if you set the resampling strategy, it will balance your data based on your strategy
     if cfg.BASIC.SAMPLING_STRATEGY is not None:
         counter = Counter(_y)
         print(f"Before sampling {counter}")
-        X_train, y_train = dataset.resampling(X=_X, y=_y)
-        counter = Counter(y_train)
+        _X, _y = dataset.resampling(X=_X, y=_y)
+        counter = Counter(_y)
         print(f"After sampling {counter}")
-
-    # change the scale of data
-    if scaler is not None:
-        _X = scaler.do_scale(data=_X)
 
     # config cross validation settings
     cv = KFold(n_splits=cfg.MODEL.K_FOLD, random_state=cfg.BASIC.RAND_STATE, shuffle=cfg.MODEL.SHUFFLE)
@@ -123,12 +136,15 @@ def do_fine_tune(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoder
                  method=TuningMode.GRID_SEARCH):
     # split data to train and test sub-dataset
     _X_train, _X_val, _X_test, _y_train, _y_val, _y_test = dataset.split_to(has_validation=True)
-    # convert categorical features to integer
-    _X_train, _X_val = encoder.do_encode(X_train=_X_train, X_test=_X_val, y_train=_y_train,
-                                         y_test=_y_val)
-    # select integer columns ( if your encoder is None, it will select just integer columns for training)
-    _X_train = dataset.select_columns(data=_X_train)
-    _X_val = dataset.select_columns(data=_X_val)
+
+    if encoder is None:
+        # select integer columns ( if your encoder is None, it will select just integer columns for training)
+        _X_train = dataset.select_columns(data=_X_train)
+        _X_val = dataset.select_columns(data=_X_val)
+    else:
+        # convert categorical features to integer
+        _X_train, _X_val = encoder.do_encode(X_train=_X_train, X_test=_X_val, y_train=_y_train,
+                                             y_test=_y_val)
     # change the scale of data
     _X_train, _X_val = scaler.do_scale(X_train=_X_train, X_test=_X_val)
     # run tuning
