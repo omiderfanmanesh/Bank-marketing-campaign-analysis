@@ -52,7 +52,7 @@ class BasedModel:
         print('evaluation...')
         y_pred = self.model.predict(X_test)
         score = self.metric(y_test, y_pred)
-        print(f'score is {score}')
+        print(f'score is {score:.3f}')
 
         if self._confusion_matrix:
             plot_confusion_matrix(self.model, X_test, y_test, cmap=plt.cm.Blues,

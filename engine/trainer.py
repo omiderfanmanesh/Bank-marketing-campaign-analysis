@@ -1,6 +1,7 @@
 #  Copyright (c) 2021, Omid Erfanmanesh, All rights reserved.
 
 
+import copy
 import warnings
 from collections import Counter
 
@@ -21,66 +22,39 @@ def do_train(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, s
     # encode target values
     dataset.df[dataset.target_col] = encoder.custom_encoding(dataset.df, col=cfg.DATASET.TARGET,
                                                              encode_type=cfg.ENCODER.Y)
-    if pca is None:
 
-        # split data to train and test sub-dataset
-        X_train, X_test, y_train, y_test = dataset.split_to()
+    # split data to train and test sub-dataset
+    X_train, X_test, y_train, y_test = dataset.split_to()
 
-        # convert categorical features to integer
-        if encoder is None:
-            # select integer columns ( if your encoder is None, it will select just integer columns for training)
-            X_train = dataset.select_columns(data=X_train)
-            X_test = dataset.select_columns(data=X_test)
-        else:
-            X_train, X_test = encoder.do_encode(X_train=X_train, X_test=X_test, y_train=y_train,
-                                                y_test=y_test)
-
-        # get columns before scaling data, it will be used for feature importance method
-        columns = X_train.columns
-        # change the scale of data
-        if scaler is not None:
-            X_train, X_test = scaler.do_scale(X_train=X_train, X_test=X_test)
-
-        # if you set the resampling strategy, it will balance your data based on your strategy
-        if cfg.BASIC.SAMPLING_STRATEGY is not None:
-            counter = Counter(y_train)
-            print(f"Before sampling {counter}")
-            X_train, y_train = dataset.resampling(X=X_train, y=y_train)
-            counter = Counter(y_train)
-            print(f"After sampling {counter}")
-
+    # convert categorical features to integer
+    if encoder is None:
+        # select integer columns ( if your encoder is None, it will select just integer columns for training)
+        X_train = dataset.select_columns(data=X_train)
+        X_test = dataset.select_columns(data=X_test)
     else:
-        if encoder is None:
-            _data = dataset.select_columns(data=dataset.df)
-        else:
-            # convert categorical features to integer
-            _data = encoder.do_encode(data=dataset.df, y=dataset.targets.values)
+        X_train, X_test = encoder.do_encode(X_train=X_train, X_test=X_test, y_train=y_train,
+                                            y_test=y_test)
 
-        _y = _data[dataset.target_col]
-        _X = _data.drop([dataset.target_col], axis=1)
-        # change the scale of data
-        if scaler is not None:
-            _X = scaler.do_scale(data=_X)
+    # change the scale of data
+    if scaler is not None:
+        X_train, X_test = scaler.do_scale(X_train=X_train, X_test=X_test)
 
-        # if you set the resampling strategy, it will balance your data based on your strategy
-        if cfg.BASIC.SAMPLING_STRATEGY is not None:
-            counter = Counter(_y)
-            print(f"Before sampling {counter}")
-            _X, _y = dataset.resampling(X=_X, y=_y)
-            counter = Counter(_y)
-            print(f"After sampling {counter}")
-
-        # apply pca analysis to data
-        df_pca = pca.do_pca(data=_X.copy(deep=True), y=_y)
-        # set True if you need to plot the pca components
+    if pca is not None:
+        # apply pca analysis to train set
+        X_train, X_test = pca.apply(X_train=X_train, X_test=X_test)
         if cfg.PCA.PLOT:
-            pca.plot(X=df_pca.copy(deep=True), y=_y)
-        # store pca values to dataset object
-        dataset.pca = df_pca.copy(deep=True)
-        # get columns of pca dataframe, it will be used for feature importance method
-        columns = df_pca.columns
-        # create train, test dataset
-        X_train, X_test, y_train, y_test = dataset.split_to(use_pca=True)
+            pca.plot(X=copy.deepcopy(X_train), y=y_train)
+
+    # get columns before scaling data, it will be used for feature importance method
+    columns = X_train.columns
+
+    # if you set the resampling strategy, it will balance your data based on your strategy
+    if cfg.BASIC.SAMPLING_STRATEGY is not None:
+        counter = Counter(y_train)
+        print(f"Before sampling {counter}")
+        X_train, y_train = dataset.resampling(X=X_train, y=y_train)
+        counter = Counter(y_train)
+        print(f"After sampling {counter}")
 
     # train the model
     model.train(X_train=X_train, y_train=y_train)
