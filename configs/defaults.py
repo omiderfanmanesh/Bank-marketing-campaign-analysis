@@ -2,7 +2,7 @@
 
 from yacs.config import CfgNode as CN
 
-from data.based import EncoderTypes, ScaleTypes
+from data.based import EncoderTypes, ScaleTypes, TransformersType
 from model.based import MetricTypes, TaskMode
 from model.based import Model
 from utils import RuntimeMode
@@ -18,7 +18,8 @@ _C = CN()
 # -----------------------------------------------------------------------------
 _C.BASIC = CN()
 _C.BASIC.SEED = 2021
-_C.BASIC.PCA = True  # pca = True will apply principal component analysis to data
+_C.BASIC.PCA = False  # pca = True will apply principal component analysis to data
+_C.BASIC.TRANSFORMATION = True
 _C.BASIC.RAND_STATE = 2021
 _C.BASIC.MODEL = Model.SVM  # select training model e.g. SVM, RandomForest, ...
 _C.BASIC.RUNTIME_MODE = RuntimeMode.TRAIN  # runtime modes {Train, cross validation, hyperparameter tuning}
@@ -111,6 +112,18 @@ _C.ENCODER.Y = EncoderTypes.LABEL  # if your target is categorical
 # -----------------------------------------------------------------------------
 _C.SCALER = CN()
 _C.SCALER = ScaleTypes.STANDARD  # select the type of scaler (STANDARD SCALER, MINMAX SCALER, ...) that you want to apply to your data
+
+# -----------------------------------------------------------------------------
+# TRANSFORMATION
+# -----------------------------------------------------------------------------
+_C.TRANSFORMATION = CN()
+_C.TRANSFORMATION.AGE = TransformersType.BOX_COX  #
+_C.TRANSFORMATION.BALANCE = TransformersType.BOX_COX  #
+_C.TRANSFORMATION.DAY = TransformersType.NONE  #
+_C.TRANSFORMATION.DURATION = TransformersType.BOX_COX  #
+_C.TRANSFORMATION.CAMPAIGN = TransformersType.BOX_COX  #
+_C.TRANSFORMATION.PDAYS = TransformersType.LOG  #
+_C.TRANSFORMATION.PREVIOUS = TransformersType.BOX_COX  #
 
 # -----------------------------------------------------------------------------
 # DECOMPOSITION

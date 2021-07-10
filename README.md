@@ -304,6 +304,26 @@ select the type of scaler (STANDARD SCALER, MINMAX SCALER, ...) that you want to
 _C.SCALER = ScaleTypes.STANDARD 
 ```
 
+## TRANSFORMATION
+
+Initialize the TRANSFORMATION configs for our project:
+
+```python
+_C.TRANSFORMATION = CN()
+```
+
+If you need to transform a specific column, write transformation type here
+
+```python
+_C.TRANSFORMATION.AGE = TransformersType.BOX_COX  #
+_C.TRANSFORMATION.BALANCE = TransformersType.BOX_COX  #
+_C.TRANSFORMATION.DAY = TransformersType.NONE  #
+_C.TRANSFORMATION.DURATION = TransformersType.BOX_COX  #
+_C.TRANSFORMATION.CAMPAIGN = TransformersType.BOX_COX  #
+_C.TRANSFORMATION.PDAYS = TransformersType.LOG  #
+_C.TRANSFORMATION.PREVIOUS = TransformersType.BOX_COX  #
+```
+
 ## DECOMPOSITION
 
 if you set ```_C.BASIC.PCA = True```, the PCA configuarion will be loaded from this section:

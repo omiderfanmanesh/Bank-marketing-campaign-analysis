@@ -1,6 +1,7 @@
 #  Copyright (c) 2021, Omid Erfanmanesh, All rights reserved.
 
 
+import copy
 from pprint import pprint
 
 import numpy as np
@@ -128,11 +129,11 @@ class BasedAnalyzer:
             kurt = self.df.kurt()
             skew = self.df.skew()
 
-            skew_log = self.dataset.transform(skew, TransformersType.LOG)
-            skew_sqrt = self.dataset.transform(skew, TransformersType.SQRT)
-            skew_box_cox = self.dataset.transform(skew, TransformersType.BOX_COX)
+            axis = list(skew.axes[0])
+            skew_log = self.dataset.transformation(copy.deepcopy(self.df[axis]), TransformersType.LOG).skew()
+            skew_sqrt = self.dataset.transformation(copy.deepcopy(self.df[axis]), TransformersType.SQRT).skew()
+            skew_box_cox = self.dataset.transformation(copy.deepcopy(self.df[axis]), TransformersType.BOX_COX).skew()
 
-            axis = np.array(skew.axes[0])
             skew_box_cox = np.array(skew_box_cox)
             skew_box_cox_dic = {}
             for ax, val in zip(axis, skew_box_cox):
@@ -140,11 +141,10 @@ class BasedAnalyzer:
 
             skew_box_cox = pd.Series(skew_box_cox_dic)
 
-            kurt_log = self.dataset.transform(kurt, TransformersType.LOG)
-            kurt_sqrt = self.dataset.transform(kurt, TransformersType.SQRT)
-            kurt_box_cox = self.dataset.transform(kurt, TransformersType.BOX_COX)
+            kurt_log = self.dataset.transformation(copy.deepcopy(self.df[axis]), TransformersType.LOG).kurt()
+            kurt_sqrt = self.dataset.transformation(copy.deepcopy(self.df[axis]), TransformersType.SQRT).kurt()
+            kurt_box_cox = self.dataset.transformation(copy.deepcopy(self.df[axis]), TransformersType.BOX_COX).kurt()
 
-            axis = np.array(kurt.axes[0])
             kurt_box_cox = np.array(kurt_box_cox)
             kurt_box_cox_dic = {}
             for ax, val in zip(axis, kurt_box_cox):

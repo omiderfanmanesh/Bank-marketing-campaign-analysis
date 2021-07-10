@@ -7,8 +7,8 @@ from eda.based.based_plots import BasedPlot
 
 
 def do_analysis(dataset: BasedDataset, plots: BasedPlot, analyzer: BasedAnalyzer, encoder: Encoders, scaler: Scalers):
-    plots.resample(encoder=encoder, scaler=scaler)
-    # analyzer.description()
+    # plots.resample(encoder=encoder, scaler=scaler)
+    analyzer.description()
     # plots.rel(x='balance', y='age')
     # plots.duration()
     # dataset.duration()

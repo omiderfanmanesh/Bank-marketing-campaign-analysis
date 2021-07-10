@@ -61,7 +61,7 @@ class BasedDataset:
             cols = list(self._cfg.DATASET.DROP_COLS)
             self.df = self.df.drop(labels=cols, axis=1)
 
-    def transform(self, data, trans_type):
+    def transformation(self, data: DataFrame, trans_type=None):
         """
         change the distribution of data by using log transformation, ...
 
@@ -69,18 +69,41 @@ class BasedDataset:
         :param trans_type:
         :return:
         """
-        _min = min(data)
-        if _min <= 0:
-            data = data + 1 - _min
+
         try:
-            if trans_type == TransformersType.LOG:
-                data = np.log(data)
-            elif trans_type == TransformersType.SQRT:
-                data = np.sqrt(data)
-            elif trans_type == TransformersType.BOX_COX:
-                data = stats.boxcox(data)[0]
+            if trans_type is None:
+                cols = [*self._cfg.TRANSFORMATION]
+                cols = [x.lower() for x in cols]
+                cols = [x for x in cols if x in data.columns]
+                _min = data[cols].min()
+                for index, val in _min.iteritems():
+                    if val <= 0:
+                        data[index] = data[index] + 1 - val
+                for col in cols:
+                    if col in data.columns:
+                        trans_type = self._cfg.TRANSFORMATION[col.upper()]
+                        if trans_type == TransformersType.LOG:
+                            data[col] = np.log(data[col])
+                        elif trans_type == TransformersType.SQRT:
+                            data[col] = np.sqrt(data[col])
+                        elif trans_type == TransformersType.BOX_COX:
+                            data[col] = stats.boxcox(data[col])[0]
+            else:
+                _min = data.min()
+                for index, val in _min.iteritems():
+                    if val <= 0:
+                        data[index] = data[index] + 1 - val
+                if trans_type == TransformersType.LOG:
+                    data = np.log(data)
+                elif trans_type == TransformersType.SQRT:
+                    data = np.sqrt(data)
+                elif trans_type == TransformersType.BOX_COX:
+                    for col in data.columns:
+                        data[col] = stats.boxcox(data[col])[0]
+
+
         except Exception as e:
-            print('transform can not be applied')
+            print('transform can not be applied ', e)
 
         return data
 

@@ -23,6 +23,8 @@ def do_train(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoders, s
     dataset.df[dataset.target_col] = encoder.custom_encoding(dataset.df, col=cfg.DATASET.TARGET,
                                                              encode_type=cfg.ENCODER.Y)
 
+    if cfg.BASIC.TRANSFORMATION:
+        dataset.df = dataset.transformation(copy.deepcopy(dataset.df))
     # split data to train and test sub-dataset
     X_train, X_test, y_train, y_test = dataset.split_to()
 
