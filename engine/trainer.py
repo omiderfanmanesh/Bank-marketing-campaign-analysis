@@ -79,6 +79,9 @@ def do_cross_val(cfg, model: BasedModel, dataset: BasedDataset, encoder: Encoder
                                  encode_type=cfg.ENCODER.Y)
     _X = dataset.df.drop(dataset.target_col, axis=1)
 
+    if cfg.BASIC.TRANSFORMATION:
+        _X = dataset.transformation(copy.deepcopy(_X))
+
     if encoder is None:
         _X = dataset.select_columns(data=_X)
     else:

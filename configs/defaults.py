@@ -22,7 +22,7 @@ _C.BASIC.PCA = False  # pca = True will apply principal component analysis to da
 _C.BASIC.TRANSFORMATION = True
 _C.BASIC.RAND_STATE = 2021
 _C.BASIC.MODEL = Model.SVM  # select training model e.g. SVM, RandomForest, ...
-_C.BASIC.RUNTIME_MODE = RuntimeMode.TRAIN  # runtime modes {Train, cross validation, hyperparameter tuning}
+_C.BASIC.RUNTIME_MODE = RuntimeMode.CROSS_VAL  # runtime modes {Train, cross validation, hyperparameter tuning}
 _C.BASIC.TASK_MODE = TaskMode.CLASSIFICATION  # task mode = {classification, regression}
 # data resampling, {None,SMOTE,RANDOM_UNDER_SAMPLING} and {None} means don't use
 # resampling, order is important e.g. (Sampling.SMOTE, Sampling.RANDOM_UNDER_SAMPLING),
